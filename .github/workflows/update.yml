@@ -1,0 +1,45 @@
+name: Actualizar tablero
+
+on:
+  schedule:
+    - cron: '17 11 * * *'   # todos los días 6:17 a. m. hora Colombia (11:17 UTC)
+  workflow_dispatch:         # botón "Run workflow" para correrlo a mano
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-tablero
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Probar parsers
+        run: python tests/test_parsers.py
+
+      - name: Consultar Fedegolf
+        run: python scraper.py || echo "::warning::La consulta a Fedegolf falló; se regenera el tablero con el archivo existente"
+
+      - name: Fusionar con el archivo histórico
+        run: python merge.py
+
+      - name: Generar el tablero
+        run: python build_page.py
+
+      - name: Publicar cambios
+        run: |
+          git config user.name "tablero-bot"
+          git config user.email "tablero-bot@users.noreply.github.com"
+          git add data/historial.json data/tortugas.json data/ranking.json data/torneos.json docs/index.html docs/.nojekyll
+          if git diff --cached --quiet; then echo "Sin cambios"; else git commit -m "Actualización automática $(date -u +%Y-%m-%d)" && git push; fi
