@@ -1,0 +1,209 @@
+[
+ {
+  "codigo": 3208,
+  "id": "0035x000032oaW5AAI",
+  "nombre": "Juan Pablo Gomez Espinal",
+  "corto": "Juan Pablo Gomez",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 2.5
+ },
+ {
+  "codigo": 13785,
+  "id": "0035x000032odDjAAI",
+  "nombre": "Felipe Gomez Espinal",
+  "corto": "Felipe Gomez",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": -0.3
+ },
+ {
+  "codigo": 30225,
+  "id": "0035x000034wZAEAA2",
+  "nombre": "Santiago Giraldo Navarro",
+  "corto": "Santiago Giraldo",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 11
+ },
+ {
+  "codigo": 30029,
+  "id": "0035x000034v53OAAQ",
+  "nombre": "Mateo Uribe Echandia",
+  "corto": "Mateo Uribe",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 4.6
+ },
+ {
+  "codigo": 4293,
+  "id": "0035x000032oanFAAQ",
+  "nombre": "Alejandro Gomez Gutierrez",
+  "corto": "Alejandro Gomez",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 6.3
+ },
+ {
+  "codigo": 39315,
+  "id": "003Ua00000zDm0aIAC",
+  "nombre": "Sergio Londoño Henriquez",
+  "corto": "Sergio Londoño",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 13.7
+ },
+ {
+  "codigo": 16183,
+  "id": "0035x000032odpLAAQ",
+  "nombre": "Daniel Valencia Velez",
+  "corto": "Daniel Valencia",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": 2.8
+ },
+ {
+  "codigo": 31888,
+  "id": "0035x00003Q302wAAB",
+  "nombre": "Juan Jose Escobar Bernal",
+  "corto": "Juan Jose Escobar",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 11.1
+ },
+ {
+  "codigo": 30518,
+  "id": "0035x00003IgFtqAAF",
+  "nombre": "Julián Jaramillo Paulson",
+  "corto": "Julián Jaramillo",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 6.9
+ },
+ {
+  "codigo": 20086,
+  "id": "0035x000032oehJAAQ",
+  "nombre": "Manuel Gonzalez Thompson",
+  "corto": "Manuel Gonzalez",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 8.5
+ },
+ {
+  "codigo": 154,
+  "id": "0035x000032oZh0AAE",
+  "nombre": "Martin Gonzalez Figueroa",
+  "corto": "Martin Gonzalez",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": -0.6
+ },
+ {
+  "codigo": 31664,
+  "id": "0035x000038eA0eAAE",
+  "nombre": "Mateo Arango Hinestrosa",
+  "corto": "Mateo Arango",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": 6.6
+ },
+ {
+  "codigo": 28205,
+  "id": "0035x000032ogmDAAQ",
+  "nombre": "Miguel Giraldo Navarro",
+  "corto": "Miguel Giraldo",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 9.6
+ },
+ {
+  "codigo": 24330,
+  "id": "0035x000032ofnOAAQ",
+  "nombre": "Juan Andres Jaramillo Paulson",
+  "corto": "Juan Andres Jaramillo",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 4.8
+ },
+ {
+  "codigo": 38998,
+  "id": "003Ua00000uwsmBIAQ",
+  "nombre": "Nicolas Bettin Monroy",
+  "corto": "Nicolas Bettin",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Azules",
+  "indice": 21.5
+ },
+ {
+  "codigo": 37352,
+  "id": "003Ua00000aoURCIA2",
+  "nombre": "Pablo Ortega Londoño",
+  "corto": "Pablo Ortega",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Azules",
+  "indice": 18.6
+ },
+ {
+  "codigo": 36348,
+  "id": "003Ua00000PCCa5IAH",
+  "nombre": "Pedro Gomez Lalinde",
+  "corto": "Pedro Gomez",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Azules",
+  "indice": 13.6
+ },
+ {
+  "codigo": 30530,
+  "id": "0035x00003IgKNCAA3",
+  "nombre": "Pedro Uribe Quintero",
+  "corto": "Pedro Uribe",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 4.4
+ },
+ {
+  "codigo": 30520,
+  "id": "0035x00003IgFutAAF",
+  "nombre": "Rafael Arango Hinestrosa",
+  "corto": "Rafael Arango",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 3.3
+ },
+ {
+  "codigo": 6200,
+  "id": "0035x000032obHSAAY",
+  "nombre": "Ricardo Lopez Harry",
+  "corto": "Ricardo Lopez",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": -0.8
+ },
+ {
+  "codigo": 2435,
+  "id": "0035x000032oa3CAAQ",
+  "nombre": "Simon Correa Figueroa",
+  "corto": "Simon Correa",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": -2
+ },
+ {
+  "codigo": 22763,
+  "id": "0035x000032ofOEAAY",
+  "nombre": "Felipe Gonzalez Thompson",
+  "corto": "Felipe Gonzalez",
+  "cat": "Mid Amateur Caballeros",
+  "marcas": "Negras",
+  "indice": 0.4
+ },
+ {
+  "codigo": 9142,
+  "id": "0035x000032oc2DAAQ",
+  "nombre": "Jose Ignacio Ramirez Gomez",
+  "corto": "Jose Ignacio Ramirez",
+  "cat": "Universitarios Caballeros",
+  "marcas": "Negras",
+  "indice": -4.2
+ }
+]

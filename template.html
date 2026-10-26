@@ -1,0 +1,1078 @@
+<title>Las Tortugas Golf</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky scoreboard header + tab rail; each view is a stack of panels on a fairway-green ground with bone cards. */
+:root{
+  --bg:#eef0e8; --card:#fbfbf6; --card2:#f1f3ea; --line:#d5dac8; --fg:#17251c; --muted:#5d6b60; --faint:#8a9688;
+  --accent:#1f7a4a; --accent-ink:#ffffff; --amber:#c9811e; --amber-ink:#2a1a05;
+  --good:#1f7a4a; --bad:#b4362f; --warn:#c9811e;
+  --s1:#1f7a4a; --s2:#2f6fb0;
+  --hero:#102b1c; --hero-fg:#f3f5ea; --hero-muted:#a9bba9;
+  --heat0:#e6ebdd; --heat1:#bfd6c3; --heat2:#8fbc9c; --heat3:#4f9a6a; --heat4:#1f7a4a;
+  --shadow:0 1px 2px rgba(20,40,25,.08),0 8px 24px -12px rgba(20,40,25,.25);
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1713; --card:#172119; --card2:#1d2a21; --line:#2c3a30; --fg:#eef2e8; --muted:#a7b5a8; --faint:#6f7f72;
+  --accent:#3fa36b; --accent-ink:#06130b; --amber:#d9862a; --amber-ink:#1c1105;
+  --good:#3fa36b; --bad:#e06b63; --warn:#d9862a;
+  --s1:#3fa36b; --s2:#5b93d6;
+  --hero:#0b1a11; --hero-fg:#f3f5ea; --hero-muted:#93a596;
+  --heat0:#1a241d; --heat1:#234a32; --heat2:#2b6b45; --heat3:#36905a; --heat4:#4fbf7d;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1713; --card:#172119; --card2:#1d2a21; --line:#2c3a30; --fg:#eef2e8; --muted:#a7b5a8; --faint:#6f7f72;
+  --accent:#3fa36b; --accent-ink:#06130b; --amber:#d9862a; --amber-ink:#1c1105;
+  --good:#3fa36b; --bad:#e06b63; --warn:#d9862a;
+  --s1:#3fa36b; --s2:#5b93d6;
+  --hero:#0b1a11; --hero-fg:#f3f5ea; --hero-muted:#93a596;
+  --heat0:#1a241d; --heat1:#234a32; --heat2:#2b6b45; --heat3:#36905a; --heat4:#4fbf7d;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--hero)}
+h1,h2,h3,h4{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1}
+h2{font-size:1.45rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+header.top{background:var(--hero);color:var(--hero-fg);position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.topin{max-width:1180px;margin:0 auto;padding-block:14px 0;display:flex;flex-direction:column;gap:10px}
+.brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand .logo{width:46px;height:46px;flex:none}
+.brand h1{font-size:1.6rem;font-weight:800;letter-spacing:-.01em}
+.brand .sub{color:var(--hero-muted);font-size:.8rem}
+.brand .right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.brand>div:nth-child(2){min-width:0;flex:1 1 200px}
+@media (max-width:640px){.brand .logo{width:36px;height:36px}.brand h1{font-size:1.3rem}.brand .sub{font-size:.72rem}.brand .right{flex:1 1 100%;margin-left:0}.search{flex:1}.search input{width:100%}}
+.search{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px;padding:4px 10px;position:relative}
+.search input{background:none;border:0;color:var(--hero-fg);font:inherit;width:180px;outline:none}
+.search input::placeholder{color:var(--hero-muted)}
+.search .sug{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);overflow:hidden;z-index:20}
+.search .sug button{display:block;width:100%;text-align:left;padding:8px 10px}
+.search .sug button:hover,.search .sug button:focus{background:var(--card2)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin:0 -4px}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{padding:10px 12px;font-family:var(--display);font-weight:700;font-size:.92rem;color:var(--hero-muted);border-bottom:3px solid transparent;white-space:nowrap;border-radius:4px 4px 0 0}
+nav.tabs button[aria-selected="true"]{color:var(--hero-fg);border-bottom-color:var(--amber)}
+nav.tabs button:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
+
+main{max-width:1180px;margin:0 auto;padding-block:22px 60px;display:flex;flex-direction:column;gap:22px}
+.view{display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow);min-width:0}
+.panel.flat{box-shadow:none}
+.panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.panel-h p{color:var(--muted);font-size:.9rem;max-width:62ch}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:900px){.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.g2,.g3,.g4{grid-template-columns:minmax(0,1fr)}}
+
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card2);border-radius:10px;padding:12px 14px;min-width:0}
+.tile .v{font-family:var(--display);font-size:1.7rem;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .l{font-size:.78rem;color:var(--muted)}
+
+/* awards */
+.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.award{position:relative;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--card);display:flex;flex-direction:column;gap:6px;min-width:0;cursor:pointer;text-align:left}
+.award:hover{border-color:var(--accent)}
+.award .ic{font-size:1.4rem;line-height:1}
+.award .t{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.award .n{font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1.15}
+.award .d{font-size:.85rem;color:var(--muted)}
+.award .big{font-family:var(--mono);font-size:1.3rem;font-weight:600;color:var(--accent)}
+
+/* ranking list */
+.rank{display:flex;flex-direction:column}
+.rank .row{display:grid;grid-template-columns:28px minmax(0,1.3fr) 64px 60px 132px 56px minmax(80px,1fr) 70px;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px}
+.rank .tee{display:flex;align-items:center}
+.rank .tee select{width:100%;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit;font-size:.8rem;cursor:pointer}
+.rank .tee select.changed{border-color:var(--amber);box-shadow:0 0 0 2px color-mix(in srgb,var(--amber) 25%,transparent)}
+.rank .ch{font-family:var(--display);font-weight:800;font-size:1.2rem;text-align:right;font-variant-numeric:tabular-nums;color:var(--accent)}
+.teebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-bottom:10px}
+.teebar select{padding:5px 8px;border-radius:6px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit;font-size:.85rem}
+.teebar button{padding:5px 10px;border-radius:6px;border:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--muted)}
+.teebar button:hover{color:var(--fg);border-color:var(--accent)}
+.rank .row:hover{background:var(--card2)}
+.rank .row.head{border-top:0;cursor:default;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.rank .row.head:hover{background:none}
+.rank .pos{font-family:var(--mono);color:var(--muted);text-align:right;font-size:.85rem}
+.rank .nm{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank .nm small{display:block;font-weight:400;color:var(--muted);font-size:.75rem}
+.rank .ix{font-family:var(--display);font-weight:800;font-size:1.2rem;text-align:right;font-variant-numeric:tabular-nums}
+.rank .dl{font-family:var(--mono);font-size:.85rem;text-align:right}
+.rank .bar{height:10px;background:var(--card2);border-radius:5px;position:relative;overflow:hidden}
+.rank .bar i{position:absolute;top:0;bottom:0;left:0;background:var(--accent);border-radius:5px}
+.rank .sp svg{display:block;width:100%;height:26px}
+.rank.hb3 .row{grid-template-columns:24px minmax(0,1.4fr) 64px minmax(80px,1fr)}
+@media (max-width:860px){.rank .row{grid-template-columns:24px minmax(0,1fr) 54px 118px 44px}.rank .bar,.rank .sp,.rank .hb,.rank .dl{display:none}.rank.hb3 .row{grid-template-columns:24px minmax(0,1fr) 60px}.rank.hb3 .bar{display:block}}
+@media (max-width:420px){.rank .row{grid-template-columns:20px minmax(0,1fr) 50px 104px 40px;gap:6px}.rank .nm small{display:none}}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{padding:7px 8px;text-align:left;border-top:1px solid var(--line);white-space:nowrap}
+th{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;border-top:0;cursor:pointer;user-select:none}
+th.r,td.r{text-align:right}
+th[data-sort]:hover{color:var(--fg)}
+th .arrow{opacity:.5;font-size:.7em}
+td.num,th.r{font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--card2)}
+tr.me td{background:color-mix(in srgb,var(--amber) 12%,transparent)}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.72rem;font-weight:600;letter-spacing:.03em}
+.pill.g{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.pill.b{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pill.n{background:var(--card2);color:var(--muted)}
+.pill.a{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber-ink)}
+:root[data-theme="dark"] .pill.a{color:var(--amber)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pill.a{color:var(--amber)}}
+
+/* board chips (rankings tab) */
+.boards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.board ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.board li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 4px;border-top:1px solid var(--line);cursor:pointer;border-radius:6px}
+.board li:hover{background:var(--card2)}
+.board li .k{font-family:var(--mono);color:var(--muted);font-size:.8rem;text-align:right}
+.board li .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board li .v{font-family:var(--mono);font-weight:600}
+.board li.top .k{color:var(--amber);font-weight:700}
+.board .foot{font-size:.78rem;color:var(--muted);margin-top:8px}
+
+/* charts */
+.chart{position:relative;width:100%;min-width:0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.chart .grid line{stroke:var(--line);stroke-width:1}
+.chart .axis line{stroke:var(--line)}
+.tip{position:fixed;pointer-events:none;background:var(--fg);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:.78rem;z-index:50;max-width:260px;white-space:pre-line;box-shadow:var(--shadow)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+/* heatmap */
+.heat{display:grid;gap:3px;font-size:.78rem}
+.heat .hrow{display:grid;grid-template-columns:minmax(110px,150px) repeat(12,minmax(0,1fr)) 44px;gap:3px;align-items:center}
+.heat .hrow .hn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.heat .hrow .hn:hover{color:var(--accent)}
+.heat .cell{aspect-ratio:1.6;border-radius:3px;background:var(--heat0);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.7rem;color:var(--fg);max-width:100%}
+.heat .c1{background:var(--heat1)} .heat .c2{background:var(--heat2)} .heat .c3{background:var(--heat3);color:#fff} .heat .c4{background:var(--heat4);color:#fff}
+.heat .hm{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:center}
+.heat .ht{font-family:var(--mono);text-align:right;color:var(--muted)}
+.heat-wrap{overflow-x:auto}
+.heat-wrap .heat{min-width:560px}
+
+/* players grid */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.pcard{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:8px;text-align:left;min-width:0}
+.pcard:hover{border-color:var(--accent)}
+.pcard .hd{display:flex;align-items:center;gap:10px}
+.pcard .av{width:40px;height:40px;border-radius:50%;background:var(--hero);color:var(--hero-fg);font-family:var(--display);font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:.9rem}
+.pcard .nm{font-weight:600;line-height:1.2}
+.pcard .nm small{display:block;color:var(--muted);font-weight:400;font-size:.75rem}
+.pcard .ix{margin-left:auto;font-family:var(--display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.pcard .meta{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);font-family:var(--mono)}
+.pcard svg{display:block;width:100%;height:34px}
+
+/* player detail */
+.phead{background:var(--hero);color:var(--hero-fg);border-radius:14px;padding:20px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.phead .big{font-family:var(--display);font-size:3.2rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.phead .nm{font-family:var(--display);font-size:1.6rem;font-weight:800;line-height:1.1}
+.phead .sub{color:var(--hero-muted);font-size:.85rem}
+.phead .kv{display:grid;grid-template-columns:auto auto;gap:2px 14px;font-size:.82rem;color:var(--hero-muted)}
+.phead .kv b{color:var(--hero-fg);font-weight:600;font-family:var(--mono)}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:600;padding:4px 0}
+.back:hover{color:var(--accent)}
+.dist{display:flex;height:22px;border-radius:6px;overflow:hidden;gap:2px;background:var(--bg)}
+.dist i{display:block;height:100%}
+.dist-l{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:.8rem;margin-top:8px}
+.dist-l span i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.sc{border-top:0}
+.sc table{font-family:var(--mono);font-size:.8rem}
+.sc td,.sc th{padding:3px 5px;text-align:center;min-width:26px}
+.sc td:first-child,.sc th:first-child{text-align:left;color:var(--muted);font-family:var(--body);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em}
+.sc td.eag{background:#e5b839;color:#2a1a05;border-radius:50%;font-weight:700}
+.sc td.bir{outline:2px solid var(--good);outline-offset:-3px;border-radius:50%;color:var(--good);font-weight:700}
+.sc td.bog{outline:1.5px solid var(--bad);outline-offset:-3px;color:var(--bad)}
+.sc td.dbl{background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad);font-weight:600}
+.sc td.tri{background:var(--bad);color:#fff;font-weight:700}
+.rtab tr.open td{background:var(--card2)}
+.rtab .sc-row td{padding:8px}
+.star{color:var(--amber);font-weight:700}
+
+/* versus */
+.vs-pick{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center}
+.vs-pick select{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit}
+.vs-x{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--muted)}
+.vs-rows{display:flex;flex-direction:column}
+.vs-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(90px,120px) minmax(0,1fr);gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.vs-row .m{text-align:center;font-size:.75rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.vs-row .a,.vs-row .b{display:flex;align-items:center;gap:8px}
+.vs-row .b{flex-direction:row-reverse}
+.vs-row .val{font-family:var(--mono);font-weight:600;min-width:52px}
+.vs-row .b .val{text-align:right}
+.vs-row .bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;position:relative}
+.vs-row .a .bar i{position:absolute;right:0;top:0;bottom:0;background:var(--s1);border-radius:4px}
+.vs-row .b .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--s2);border-radius:4px}
+.vs-row.win-a .a .val{color:var(--s1)} .vs-row.win-b .b .val{color:var(--s2)}
+@media (max-width:560px){.vs-row{grid-template-columns:minmax(0,1fr) 80px minmax(0,1fr)}.vs-row .bar{display:none}}
+
+/* misc */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{padding:5px 10px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.note{font-size:.82rem;color:var(--muted);max-width:70ch}
+.note b{color:var(--fg)}
+footer{color:var(--muted);font-size:.8rem;max-width:1180px;margin:0 auto;padding-block:0 40px}
+.holes{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:3px;align-items:end;height:120px}
+.holes .h{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;min-width:0}
+.holes .h i{display:block;width:100%;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px}
+.holes .h i.hard{background:var(--bad)}
+.holes .h i.easy{background:var(--s2)}
+.holes .h b{font-family:var(--mono);font-size:.68rem;color:var(--muted);font-weight:400}
+.holes-wrap{overflow-x:auto;position:relative}.holes-wrap .holes{min-width:480px}
+@media (max-width:560px){.holes-wrap::after{content:"← desliza para ver los 18 hoyos →";display:block;font-size:.72rem;color:var(--muted);text-align:center;padding-top:6px}}
+
+/* player report extras */
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.75rem;font-weight:600;background:rgba(255,255,255,.1);color:var(--hero-fg);border:1px solid rgba(255,255,255,.16)}
+.badge.warn{background:color-mix(in srgb,var(--amber) 30%,transparent);border-color:var(--amber)}
+.subnav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.subnav::-webkit-scrollbar{display:none}
+.subnav a{text-decoration:none;font-size:.8rem;font-weight:600;color:var(--muted);padding:6px 10px;border:1px solid var(--line);border-radius:999px;white-space:nowrap;background:var(--card)}
+.subnav a:hover{color:var(--accent);border-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;flex-direction:column;align-items:center;padding:5px 9px;border-radius:8px;background:var(--card2);font-family:var(--mono);font-weight:600;font-size:.9rem;min-width:56px}
+.chip small{font-weight:400;font-size:.65rem;color:var(--muted)}
+.chip:last-child{outline:2px solid var(--amber);outline-offset:-2px}
+details.dt summary{cursor:pointer;font-weight:600;color:var(--muted);padding:6px 0}
+details.dt summary:hover{color:var(--accent)}
+details.dt[open] summary{color:var(--fg)}
+.holes.cmp{height:130px}
+.holes.cmp .h{justify-content:center;display:grid;grid-template-rows:1fr 2px 1fr auto;align-items:end}
+.holes.cmp .h .dn{align-self:start}
+.holes.cmp .h span{display:block;width:100%;border-radius:3px}
+.holes.cmp .h .up{background:var(--good);align-self:flex-end;border-radius:3px 3px 0 0}
+.holes.cmp .h .mid{height:2px;background:var(--line);flex:none}
+.holes.cmp .h .dn{background:var(--bad);border-radius:0 0 3px 3px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.lnk{display:inline-block;padding:8px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none;font-weight:600;font-size:.85rem;background:var(--card2)}
+.lnk:hover{border-color:var(--accent);color:var(--accent)}
+.tile .v small{font-weight:500}
+tr.arch td{color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.rank .bar i,.vs-row .bar i{transition:width .4s ease}}
+</style>
+
+<header class="top gutter">
+  <div class="topin">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><ellipse cx="24" cy="28" rx="17" ry="11" fill="#3fa36b"/><path d="M12 25 L24 14 L36 25 Z" fill="#2a7d4f"/><path d="M17 28 L24 19 L31 28 Z" fill="#59b57f"/><circle cx="8" cy="28" r="4.5" fill="#d9862a"/><circle cx="24" cy="10" r="2.6" fill="#f3f5ea"/><path d="M22 12 L26 12" stroke="#f3f5ea" stroke-width="1.4"/><rect x="12" y="36" width="5" height="4" rx="1.5" fill="#d9862a"/><rect x="31" y="36" width="5" height="4" rx="1.5" fill="#d9862a"/></svg>
+      <div>
+        <h1>Las Tortugas</h1>
+        <div class="sub">Golf · CC Medellín · índices y rondas oficiales Fedegolf · actualizado <span id="upd">__UPD__</span></div>
+      </div>
+      <div class="right">
+        <div class="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="q" type="search" placeholder="Buscar jugador" autocomplete="off" aria-label="Buscar jugador">
+          <div class="sug" id="sug" hidden></div>
+        </div>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-view="resumen" aria-selected="true">Resumen</button>
+      <button role="tab" data-view="rankings">Rankings</button>
+      <button role="tab" data-view="actividad">Actividad</button>
+      <button role="tab" data-view="campos">Campos y hoyos</button>
+      <button role="tab" data-view="jugadores">Jugadores</button>
+      <button role="tab" data-view="versus">Cara a cara</button>
+      <button role="tab" data-view="acerca">Cómo se calcula</button>
+    </nav>
+  </div>
+</header>
+
+<main class="gutter" id="main"></main>
+<footer class="gutter">Datos: Federación Colombiana de Golf (consulta de hándicap e historial de juego). Índices WHS vigentes a la fecha de actualización. Las rondas y tarjetas son las últimas 20 reportadas por jugador.</footer>
+<div class="tip" id="tip" hidden></div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(() => {
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const TODAY = DATA.actualizado;
+const MS = 86400000;
+const d2 = n => n.toFixed(1);
+const fmtSigned = n => (n > 0 ? '+' : '') + n.toFixed(1);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / MS);
+const fmtDate = iso => { const [y,m,d] = iso.split('-'); return `${d}/${m}/${y.slice(2)}`; };
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const fmtLong = iso => { const [y,m,d] = iso.split('-'); return `${+d} ${MESES[+m-1]} ${y}`; };
+const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : null;
+const std = a => { if (a.length < 2) return null; const m = avg(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1)); };
+const shiftDate = (iso, days) => new Date(new Date(iso).getTime() + days*MS).toISOString().slice(0,10);
+const initials = n => n.split(' ').slice(0,2).map(x=>x[0]).join('');
+
+/* ---------- Llano Grande tees (Fedegolf, CC Medellín, cancha Llano Grande) ---------- */
+const TEES = [
+  { id:'7254', nombre:'Negras', yd:7254, cr:74.7, slope:142, par:72 },
+  { id:'7020', nombre:'Azules', yd:7020, cr:73.4, slope:143, par:72 },
+  { id:'6350', nombre:'Blancas', yd:6350, cr:69.9, slope:126, par:72 },
+  { id:'5731', nombre:'Doradas', yd:5731, cr:66.5, slope:120, par:72 },
+  { id:'5331', nombre:'Rojas', yd:5331, cr:65.0, slope:123, par:72 },
+  { id:'5078', nombre:'Verdes', yd:5078, cr:63.7, slope:111, par:72 },
+];
+const teeById = id => TEES.find(t => t.id === id);
+const teeDefault = p => ({ 'Negras':'7254', 'Azules':'7020', 'Blancas':'6350', 'Doradas':'5731', 'Rojas':'5331' }[p.marcas] || '7254');
+const courseHcp = (idx, t) => Math.round(idx * t.slope / 113 + (t.cr - t.par));
+let teeChoice = {}; try { teeChoice = JSON.parse(localStorage.getItem('tortugas.tees')) || {}; } catch (e) {}
+const teeFor = p => teeChoice[p.codigo] || teeDefault(p);
+
+/* ---------- derive stats ---------- */
+const P = DATA.jugadores;
+const byCode = {};
+P.forEach(p => byCode[p.codigo] = p);
+
+function indexAt(p, iso) { // latest index entry on or before iso; else earliest known
+  const h = p.historialIndice.slice().sort((a,b)=>a.fecha<b.fecha?-1:1);
+  let v = null;
+  for (const e of h) { if (e.fecha <= iso) v = e.indice; }
+  if (v === null && h.length) v = h[0].indice;
+  return v;
+}
+function validCard(r) {
+  return r.hoyos === 18 && r.scores && r.pars && r.scores.every(x => x !== null) && r.scores.reduce((a,b)=>a+b,0) === r.gross && r.gross > 0;
+}
+P.forEach(p => {
+  const R = p.rondas;                       // todo el historial acumulado (desc)
+  p.r20 = R.filter(r => r.vigente !== false); // las 20 vigentes en Fedegolf
+  const W = p.r20;
+  const r18 = R.filter(r => r.gross && r.hoyos === 18);
+  const difs = W.map(r => r.dif);
+  const counting = W.filter(r => r.cuenta);
+  const since = (days) => R.filter(r => daysBetween(r.fecha, TODAY) <= days);
+  p.st = {
+    n: R.length, n20: W.length, n30: since(30).length, n90: since(90).length, n365: since(365).length,
+    lastRound: R.length ? R[0].fecha : null,
+    daysSince: R.length ? daysBetween(R[0].fecha, TODAY) : null,
+    avgDif: avg(difs), bestDif: Math.min(...difs), worstDif: Math.max(...difs),
+    stdDif: std(difs), avgCounting: avg(counting.map(r=>r.dif)),
+    avgGross: avg(r18.map(r=>r.gross)), bestGross: r18.length ? Math.min(...r18.map(r=>r.gross)) : null,
+    worstGross: r18.length ? Math.max(...r18.map(r=>r.gross)) : null,
+    idx90: indexAt(p, shiftDate(TODAY,-90)), idx30: indexAt(p, shiftDate(TODAY,-30)), idx365: indexAt(p, shiftDate(TODAY,-365)),
+    hist: p.historialIndice.slice().sort((a,b)=>a.fecha<b.fecha?-1:1),
+    best90: (()=>{ const s = since(90); return s.length ? s.reduce((a,b)=>a.dif<b.dif?a:b) : null; })(),
+    span: R.length ? daysBetween(R[R.length-1].fecha, R[0].fecha) : 0,
+  };
+  p.st.d90 = p.st.idx90 === null ? null : p.indice - p.st.idx90;
+  p.st.d30 = p.st.idx30 === null ? null : p.indice - p.st.idx30;
+  p.st.d365 = p.st.idx365 === null ? null : p.indice - p.st.idx365;
+  p.st.idxMin = Math.min(...p.st.hist.map(h=>h.indice));
+  p.st.idxMax = Math.max(...p.st.hist.map(h=>h.indice));
+  // hole stats
+  const cards = R.filter(validCard);
+  const hs = { rounds: cards.length, eagle:0, birdie:0, par:0, bogey:0, dbl:0, tri:0, holes:0,
+    p3:[], p4:[], p5:[], front:[], back:[], worst:null };
+  cards.forEach(r => {
+    let f=0,b=0;
+    r.scores.forEach((s,i) => {
+      const d = s - r.pars[i]; hs.holes++;
+      if (d <= -2) hs.eagle++; else if (d === -1) hs.birdie++; else if (d === 0) hs.par++; else if (d === 1) hs.bogey++; else if (d === 2) hs.dbl++; else hs.tri++;
+      (r.pars[i]===3?hs.p3:r.pars[i]===4?hs.p4:hs.p5).push(d);
+      if (i < 9) f += d; else b += d;
+      if (!hs.worst || d > hs.worst.d) hs.worst = { d, s, par:r.pars[i], hole:i+1, fecha:r.fecha, cancha:r.cancha };
+    });
+    hs.front.push(f); hs.back.push(b);
+  });
+  hs.birdiesPerRound = cards.length ? (hs.birdie + hs.eagle) / cards.length : null;
+  hs.parPct = hs.holes ? (hs.par + hs.birdie + hs.eagle) / hs.holes : null;
+  hs.p3avg = avg(hs.p3); hs.p4avg = avg(hs.p4); hs.p5avg = avg(hs.p5);
+  hs.frontAvg = avg(hs.front); hs.backAvg = avg(hs.back);
+  hs.blowupPct = hs.holes ? (hs.dbl + hs.tri) / hs.holes : null;
+  p.hs = hs;
+});
+
+/* playing partners: same date + time + course */
+const groups = {};
+P.forEach(p => p.rondas.forEach(r => {
+  if (r.hora === '05:00' || !r.hora) return;
+  const k = `${r.fecha}|${r.hora}|${r.cancha}`;
+  (groups[k] = groups[k] || []).push(p.codigo);
+}));
+const partnerCount = {};
+const sharedRounds = Object.entries(groups).filter(([k, v]) => new Set(v).size >= 2).map(([k,v]) => ({ key:k, fecha:k.split('|')[0], cancha:k.split('|')[2], who:[...new Set(v)] }));
+sharedRounds.forEach(g => g.who.forEach(a => g.who.forEach(b => { if (a!==b) { partnerCount[a] = partnerCount[a]||{}; partnerCount[a][b] = (partnerCount[a][b]||0)+1; } })));
+P.forEach(p => { const pc = partnerCount[p.codigo] || {}; p.partners = Object.entries(pc).map(([c,n])=>({p:byCode[c], n})).sort((a,b)=>b.n-a.n); p.sharedN = sharedRounds.filter(g=>g.who.includes(p.codigo)).length; });
+
+/* group-level */
+const active = P.filter(p => p.st.n365 >= 3);
+const allRounds = P.flatMap(p => p.rondas.map(r => ({...r, p})));
+/* period helpers (resumen) */
+const PERIODS = [['15','15 días',15],['30','1 mes',30],['60','2 meses',60],['90','3 meses',90],['180','6 meses',180],['365','12 meses',365],['ytd','Este año (YTD)',null]];
+let period = '90'; try { const sp = localStorage.getItem('tortugas.period'); if (PERIODS.some(x=>x[0]===sp)) period = sp; } catch (e) {}
+function periodStart() { if (period === 'ytd') return TODAY.slice(0,4) + '-01-01'; return shiftDate(TODAY, -PERIODS.find(x=>x[0]===period)[2]); }
+function periodLabel() { return PERIODS.find(x=>x[0]===period)[1]; }
+function pstats(p) { const start = periodStart(); const rs = p.rondas.filter(r => r.fecha >= start); const idx0 = indexAt(p, start); return { n: rs.length, rounds: rs, idx0, d: idx0 === null ? null : p.indice - idx0, best: rs.length ? rs.reduce((a,b)=>a.dif<b.dif?a:b) : null }; }
+const months = []; { let d = new Date(TODAY); d.setDate(1); for (let i=11;i>=0;i--){ const m = new Date(d.getFullYear(), d.getMonth()-i, 1); months.push(m.toISOString().slice(0,7)); } }
+
+/* ---------- small helpers ---------- */
+const tip = document.getElementById('tip');
+function showTip(e, text) { tip.textContent = text; tip.hidden = false; moveTip(e); }
+function moveTip(e) { const x = Math.min(e.clientX + 12, window.innerWidth - 270), y = e.clientY + 14; tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
+function hideTip() { tip.hidden = true; }
+document.addEventListener('mousemove', e => { if (!tip.hidden) moveTip(e); });
+function bindTips(root) {
+  root.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mouseenter', e => showTip(e, el.dataset.tip));
+    el.addEventListener('mouseleave', hideTip);
+    el.addEventListener('focus', e => { const r = el.getBoundingClientRect(); showTip({clientX:r.left, clientY:r.bottom}, el.dataset.tip); });
+    el.addEventListener('blur', hideTip);
+  });
+}
+const sign = v => v === null ? '<span class="muted">—</span>' : `<span class="${v<0?'pos':v>0?'neg':'muted'}">${fmtSigned(v)}</span>`;
+const deltaPill = v => v === null ? '<span class="pill n">sin dato</span>' : v < -0.05 ? `<span class="pill g">▼ ${d2(Math.abs(v))} mejora</span>` : v > 0.05 ? `<span class="pill b">▲ ${d2(v)} sube</span>` : '<span class="pill n">= estable</span>';
+
+/* sparkline: index history (chronological) */
+function spark(vals, w=120, h=26, cls='') {
+  if (vals.length < 2) return '';
+  const mn = Math.min(...vals), mx = Math.max(...vals), rg = (mx - mn) || 1;
+  const pts = vals.map((v,i) => [ (i/(vals.length-1))*(w-4)+2, h-3-((v-mn)/rg)*(h-6) ]);
+  const d = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const last = pts[pts.length-1];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" class="${cls}" aria-hidden="true"><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.6" vector-effect="non-scaling-stroke"/><circle cx="${last[0]}" cy="${last[1]}" r="2.4" fill="var(--amber)"/></svg>`;
+}
+
+/* generic line chart: series = [{name,color,points:[{x(date iso),y,label}]}] */
+function lineChart(series, opt = {}) {
+  const W = opt.w || 720, H = opt.h || 240, m = {t:14,r:14,b:30,l:38};
+  const all = series.flatMap(s => s.points);
+  if (!all.length) return '<p class="muted">Sin datos.</p>';
+  const xs = all.map(p => +new Date(p.x)), ys = all.map(p => p.y);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x1 === x0) { x0 -= MS*15; x1 += MS*15; }
+  let y0 = Math.min(...ys), y1 = Math.max(...ys); const pad = (y1-y0)*0.12 || 1; y0 -= pad; y1 += pad;
+  if (opt.y0 !== undefined) y0 = Math.min(y0, opt.y0);
+  const X = v => m.l + (v - x0)/(x1-x0)*(W-m.l-m.r), Y = v => m.t + (y1 - v)/(y1-y0)*(H-m.t-m.b);
+  // y ticks
+  const step = niceStep((y1-y0)/4); const ticks = []; for (let v = Math.ceil(y0/step)*step; v <= y1; v += step) ticks.push(+v.toFixed(2));
+  // x ticks: months
+  const xt = []; { const d = new Date(x0); d.setDate(1); d.setMonth(d.getMonth()+1); const span = (x1-x0)/MS; const every = span > 900 ? 6 : span > 400 ? 3 : span > 200 ? 2 : 1; let i=0; while (+d <= x1) { if (i % every === 0) xt.push(new Date(d)); d.setMonth(d.getMonth()+1); i++; } }
+  let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opt.aria||'gráfica')}">`;
+  g += '<g class="grid">' + ticks.map(t => `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(t)}" y2="${Y(t)}"/>`).join('') + '</g>';
+  g += ticks.map(t => `<text x="${m.l-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`).join('');
+  g += xt.map(d => `<text x="${X(+d)}" y="${H-10}" text-anchor="middle">${MESES[d.getMonth()]}${d.getMonth()===0||xt.length<4?' '+String(d.getFullYear()).slice(2):''}</text>`).join('');
+  if (opt.refY !== undefined) g += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(opt.refY)}" y2="${Y(opt.refY)}" stroke="var(--amber)" stroke-dasharray="4 4"/><text x="${W-m.r}" y="${Y(opt.refY)-4}" text-anchor="end" fill="var(--amber)">${esc(opt.refLabel||'')}</text>`;
+  series.forEach(s => {
+    const pts = s.points.slice().sort((a,b)=>a.x<b.x?-1:1);
+    const d = pts.map((p,i)=>(i?'L':'M')+X(+new Date(p.x)).toFixed(1)+' '+Y(p.y).toFixed(1)).join(' ');
+    if (s.area) g += `<path d="${d} L${X(+new Date(pts[pts.length-1].x)).toFixed(1)} ${Y(y0)} L${X(+new Date(pts[0].x)).toFixed(1)} ${Y(y0)} Z" fill="${s.color}" opacity=".08"/>`;
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${s.step?'':''}/>`;
+    g += pts.map(p => `<circle cx="${X(+new Date(p.x)).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="${p.big?5:3.5}" fill="${p.hl?'var(--amber)':s.color}" stroke="var(--card)" stroke-width="1.5" tabindex="0" data-tip="${esc(p.label||'')}"/>`).join('');
+  });
+  g += '</svg>';
+  return g;
+}
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw||1))); const r = raw/p; return (r<1.5?1:r<3.5?2:r<7.5?5:10)*p; }
+
+/* bar chart: items [{label, value, tip, color}] horizontal */
+function hbars(items, opt={}) {
+  const max = Math.max(...items.map(i=>Math.abs(i.value)), 0.001);
+  return `<div class="rank hb3">` + items.map((it,i) => `<div class="row" data-code="${it.code||''}" role="button" tabindex="0"><span class="pos">${i+1}</span><span class="nm">${esc(it.label)}${it.sub?`<small>${esc(it.sub)}</small>`:''}</span><span class="ix" style="font-size:1rem">${it.fmt}</span><span class="bar" data-tip="${esc(it.tip||'')}"><i style="width:${Math.abs(it.value)/max*100}%;background:${it.color||'var(--accent)'}"></i></span></div>`).join('') + '</div>';
+}
+
+/* ---------- views ---------- */
+const main = document.getElementById('main');
+const views = {};
+
+views.resumen = () => {
+  const start = periodStart(), lab = periodLabel();
+  const PS = {}; P.forEach(p => PS[p.codigo] = pstats(p));
+  const roundsP = allRounds.filter(r => r.fecha >= start);
+  const idxs = P.map(p=>p.indice);
+  const bestP = roundsP.length ? roundsP.reduce((a,b)=>a.dif<b.dif?a:b) : null;
+  const improvers = P.filter(p=>PS[p.codigo].d!==null && PS[p.codigo].n>0).sort((a,b)=>PS[a.codigo].d-PS[b.codigo].d);
+  const juicioso = P.slice().sort((a,b)=>PS[b.codigo].n-PS[a.codigo].n)[0];
+  const dormido = P.filter(p=>p.st.daysSince!==null).sort((a,b)=>b.st.daysSince-a.st.daysSince)[0];
+  const parejo = active.filter(p=>p.st.stdDif!==null).sort((a,b)=>a.st.stdDif-b.st.stdDif)[0];
+  const birdieKing = active.filter(p=>p.hs.rounds>=5).sort((a,b)=>b.hs.birdiesPerRound-a.hs.birdiesPerRound)[0];
+  const lastRound = allRounds.slice().sort((a,b)=>a.fecha<b.fecha?1:-1)[0];
+  const scratch = P.filter(p=>p.indice<=0).length;
+  const bestGrossP = roundsP.filter(r=>r.hoyos===18&&r.gross).sort((a,b)=>a.gross-b.gross||a.dif-b.dif)[0];
+  const A = improvers[0], Z = improvers[improvers.length-1];
+  const awards = [
+    { ic:'🚀', t:`Mayor mejora · ${lab}`, p:A, big: A ? fmtSigned(PS[A.codigo].d) : '', d: A ? `de ${d2(PS[A.codigo].idx0)} a ${d2(A.indice)}` : '' },
+    { ic:'🧯', t:`Mayor retroceso · ${lab}`, p:Z, big: Z ? fmtSigned(PS[Z.codigo].d) : '', d: Z ? `de ${d2(PS[Z.codigo].idx0)} a ${d2(Z.indice)}` : '' },
+    { ic:'🏆', t:`Mejor ronda · ${lab}`, p: bestP ? bestP.p : null, big: bestP ? `${bestP.gross??'—'} (${fmtSigned(bestP.dif)})` : '', d: bestP ? `${bestP.cancha}, ${fmtLong(bestP.fecha)} · diferencial ${d2(bestP.dif)}` : '' },
+    { ic:'🥇', t:`Gross más bajo · ${lab}`, p: bestGrossP ? bestGrossP.p : null, big: bestGrossP ? `${bestGrossP.gross}` : '', d: bestGrossP ? `${bestGrossP.cancha} (${bestGrossP.marca}), ${fmtLong(bestGrossP.fecha)}` : '' },
+    { ic:'📅', t:`El más juicioso · ${lab}`, p:juicioso, big: juicioso ? `${PS[juicioso.codigo].n} rondas` : '', d: juicioso ? `${juicioso.st.n30} en los últimos 30 días` : '' },
+    { ic:'🎯', t:'El más parejo', p:parejo, big: parejo ? `σ ${d2(parejo.st.stdDif)}` : '', d: 'menor desviación de sus 20 diferenciales vigentes (jugadores activos)' },
+    { ic:'🐦', t:'Rey del birdie', p:birdieKing, big: birdieKing ? `${birdieKing.hs.birdiesPerRound.toFixed(2)} / ronda` : '', d: birdieKing ? `${birdieKing.hs.birdie + birdieKing.hs.eagle} birdies o mejor en ${birdieKing.hs.rounds} tarjetas` : '' },
+    { ic:'🐢', t:'La tortuga más dormida', p:dormido, big: dormido ? `${dormido.st.daysSince} días` : '', d: dormido ? `última ronda ${fmtLong(dormido.st.lastRound)}` : '' },
+  ];
+  const sorted = P.slice().sort((a,b)=>a.indice-b.indice);
+  const maxIdx = Math.max(...idxs), minIdx = Math.min(...idxs);
+  const dl = p => sign(PS[p.codigo].d);
+  return `
+  <section class="panel">
+    <div class="teebar" style="margin-bottom:12px"><span>Periodo del resumen</span><select id="periodSel" aria-label="Periodo">${PERIODS.map(x=>`<option value="${x[0]}" ${x[0]===period?'selected':''}>${x[1]}</option>`).join('')}</select><span class="muted">desde el ${fmtLong(start)}</span></div>
+    <div class="tiles">
+      <div class="tile"><div class="v">${P.length}</div><div class="l">tortugas federadas</div></div>
+      <div class="tile"><div class="v">${d2(avg(idxs))}</div><div class="l">índice promedio del grupo</div></div>
+      <div class="tile"><div class="v">${scratch}</div><div class="l">jugadores scratch o mejor (índice ≤ 0)</div></div>
+      <div class="tile"><div class="v">${roundsP.length}</div><div class="l">rondas en ${lab.toLowerCase().startsWith('este')?lab.toLowerCase():'los últimos '+lab.toLowerCase()}</div></div>
+      <div class="tile"><div class="v">${P.filter(p=>PS[p.codigo].n>0).length}</div><div class="l">tortugas que jugaron en el periodo</div></div>
+      <div class="tile"><div class="v" style="font-size:1.2rem">${fmtLong(lastRound.fecha)}</div><div class="l">última ronda: ${esc(lastRound.p.corto)} en ${esc(lastRound.cancha)}</div></div>
+    </div>
+  </section>
+  <section>
+    <div class="panel-h"><h2>Reconocimientos · ${lab}</h2><p>Calculados con los índices históricos y las rondas desde el ${fmtLong(start)}. Toca uno para ir al jugador.</p></div>
+    <div class="awards">${awards.filter(a=>a.p).map(a => `<button class="award" data-code="${a.p.codigo}"><span class="ic" aria-hidden="true">${a.ic}</span><span class="t">${a.t}</span><span class="n">${esc(a.p.corto)}</span><span class="big">${a.big}</span><span class="d">${esc(a.d)}</span></button>`).join('')}</div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h2>Tabla de hándicap</h2><p>Índice WHS vigente, cambio en el periodo (${lab.toLowerCase()}), marcas y hándicap de campo en Llano Grande, y la curva del índice en el último año.</p></div>
+    <div class="teebar">
+      <span>Hándicap de campo en Llano Grande desde</span>
+      <select id="teeAll" aria-label="Marcas para todos"><option value="">las marcas de cada uno</option>${TEES.map(t=>`<option value="${t.id}">${t.nombre} · ${t.yd} yd (todos)</option>`).join('')}</select>
+      <button type="button" id="teeReset" ${Object.keys(teeChoice).length?'':'hidden'}>Restablecer marcas</button>
+    </div>
+    <div class="rank">
+      <div class="row head"><span></span><span>Jugador</span><span style="text-align:right">Índice</span><span class="dl" style="text-align:right">Δ ${period==='ytd'?'YTD':lab.replace(' meses','m').replace(' mes','m').replace(' días','d')}</span><span>Marcas</span><span style="text-align:right">Hcp LG</span><span class="hb">Escala</span><span class="sp">Curva</span></div>
+      ${sorted.map((p,i) => { const t = teeById(teeFor(p)); const ch = courseHcp(p.indice, t); return `<div class="row" data-code="${p.codigo}" role="button" tabindex="0"><span class="pos">${i+1}</span><span class="nm">${esc(p.corto)}<small>${esc(p.cat.replace(' Caballeros',''))} · base: ${esc(p.marcas.toLowerCase())}</small></span><span class="ix">${d2(p.indice)}</span><span class="dl">${dl(p)}</span><span class="tee"><select class="teeSel ${teeChoice[p.codigo]&&teeChoice[p.codigo]!==teeDefault(p)?'changed':''}" data-tee="${p.codigo}" aria-label="Marcas de ${esc(p.corto)}">${TEES.map(x=>`<option value="${x.id}" ${x.id===t.id?'selected':''}>${x.nombre} · ${x.yd}</option>`).join('')}</select></span><span class="ch" data-tip="${d2(p.indice)} × ${t.slope} ÷ 113 + (${t.cr} − ${t.par}) = ${(p.indice*t.slope/113+(t.cr-t.par)).toFixed(2)} → ${ch}">${ch}</span><span class="bar hb" data-tip="Índice ${d2(p.indice)}"><i style="width:${((p.indice-minIdx)/(maxIdx-minIdx))*100}%"></i></span><span class="sp">${spark(p.st.hist.filter(h=>daysBetween(h.fecha,TODAY)<=365).map(h=>h.indice))}</span></div>`; }).join('')}
+    </div>
+    <p class="note" style="margin-top:10px">Hcp LG = hándicap de campo en Llano Grande con la fórmula WHS: índice × (slope ÷ 113) + (course rating − par), redondeado. Marcas según Fedegolf para la cancha Llano Grande: Negras 7254 yd (CR 74.7 / slope 142), Azules 7020 (73.4 / 143), Blancas 6350 (69.9 / 126), Doradas 5731 (66.5 / 120), Rojas 5331 (65.0 / 123), Verdes 5078 (63.7 / 111). Cambiar las marcas solo afecta lo que ves en tu pantalla. Δ en <span class="pos">verde</span> es bajada del índice (mejora); en <span class="neg">rojo</span>, subida. La escala compara el índice con el rango del grupo (${d2(minIdx)} a ${d2(maxIdx)}).</p>
+  </section>
+  <section class="grid g2">
+    <div class="panel">
+      <div class="panel-h"><h3>¿Quién viene mejorando?</h3><p>${lab}</p></div>
+      ${hbars(improvers.filter(p=>PS[p.codigo].d<0).slice(0,8).map(p=>({label:p.corto, value:-PS[p.codigo].d, fmt:`<span class="pos">${fmtSigned(PS[p.codigo].d)}</span>`, code:p.codigo, tip:`${p.corto}: ${d2(PS[p.codigo].idx0)} → ${d2(p.indice)}`, color:'var(--good)'})))}
+      ${improvers.filter(p=>PS[p.codigo].d<0).length ? '' : '<p class="muted">Nadie bajó su índice en el periodo.</p>'}
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>¿Quién viene subiendo?</h3><p>${lab}</p></div>
+      ${hbars(improvers.filter(p=>PS[p.codigo].d>0).slice().reverse().slice(0,8).map(p=>({label:p.corto, value:PS[p.codigo].d, fmt:`<span class="neg">${fmtSigned(PS[p.codigo].d)}</span>`, code:p.codigo, tip:`${p.corto}: ${d2(PS[p.codigo].idx0)} → ${d2(p.indice)}`, color:'var(--bad)'})))}
+      ${improvers.filter(p=>PS[p.codigo].d>0).length ? '' : '<p class="muted">Nadie subió su índice en el periodo.</p>'}
+    </div>
+  </section>`;
+};
+
+views.rankings = () => {
+  const act = p => p.st.n365 >= 3;
+  const boards = [
+    { t:'Índice más bajo', f:'Índice WHS vigente', list:P.slice().sort((a,b)=>a.indice-b.indice), v:p=>d2(p.indice) },
+    { t:'Mejor diferencial promedio', f:'Promedio de los últimos 20 diferenciales (todos, no solo los 8 que cuentan)', list:P.slice().sort((a,b)=>a.st.avgDif-b.st.avgDif), v:p=>d2(p.st.avgDif) },
+    { t:'Mejor ronda (diferencial)', f:'El diferencial más bajo entre sus últimas 20 rondas', list:P.slice().sort((a,b)=>a.st.bestDif-b.st.bestDif), v:p=>fmtSigned(p.st.bestDif) },
+    { t:'Mejor score gross', f:'Golpes brutos más bajos en una ronda de 18 hoyos', list:P.filter(p=>p.st.bestGross).sort((a,b)=>a.st.bestGross-b.st.bestGross), v:p=>p.st.bestGross },
+    { t:'Más parejos', f:'Menor desviación estándar de los 20 diferenciales · solo activos (3+ rondas en el año)', list:P.filter(act).filter(p=>p.st.stdDif).sort((a,b)=>a.st.stdDif-b.st.stdDif), v:p=>'σ '+d2(p.st.stdDif) },
+    { t:'Más montaña rusa', f:'Mayor desviación estándar · solo activos', list:P.filter(act).filter(p=>p.st.stdDif).sort((a,b)=>b.st.stdDif-a.st.stdDif), v:p=>'σ '+d2(p.st.stdDif) },
+    { t:'Más rondas en el año', f:'Rondas reportadas en los últimos 365 días (máximo 20 visibles por jugador)', list:P.slice().sort((a,b)=>b.st.n365-a.st.n365), v:p=>p.st.n365 },
+    { t:'Mayor progreso en el año', f:'Cambio del índice frente a hace 12 meses (negativo = mejora)', list:P.filter(p=>p.st.d365!==null).sort((a,b)=>a.st.d365-b.st.d365), v:p=>fmtSigned(p.st.d365) },
+    { t:'Reyes del birdie', f:'Birdies (o mejor) por ronda · tarjetas de 18 hoyos', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>b.hs.birdiesPerRound-a.hs.birdiesPerRound), v:p=>p.hs.birdiesPerRound.toFixed(2) },
+    { t:'Máquinas de par', f:'% de hoyos jugados en par o mejor', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>b.hs.parPct-a.hs.parPct), v:p=>Math.round(p.hs.parPct*100)+'%' },
+    { t:'Menos desastres', f:'% de hoyos con doble bogey o peor (menor es mejor)', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>a.hs.blowupPct-b.hs.blowupPct), v:p=>(p.hs.blowupPct*100).toFixed(1)+'%' },
+    { t:'Mejores en par 3', f:'Promedio sobre par en hoyos par 3', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>a.hs.p3avg-b.hs.p3avg), v:p=>fmtSigned(p.hs.p3avg) },
+    { t:'Mejores en par 5', f:'Promedio sobre par en hoyos par 5', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>a.hs.p5avg-b.hs.p5avg), v:p=>fmtSigned(p.hs.p5avg) },
+    { t:'Mejor cierre', f:'Diferencia entre la vuelta de ida y la de vuelta (negativo = mejor segunda vuelta)', list:P.filter(p=>p.hs.rounds>=5).sort((a,b)=>(a.hs.backAvg-a.hs.frontAvg)-(b.hs.backAvg-b.hs.frontAvg)), v:p=>fmtSigned(p.hs.backAvg-p.hs.frontAvg) },
+    { t:'Eagles', f:'Eagles (o mejor) en las tarjetas disponibles', list:P.filter(p=>p.hs.eagle>0).sort((a,b)=>b.hs.eagle-a.hs.eagle), v:p=>p.hs.eagle },
+    { t:'Más compañeros distintos', f:'Con cuántas tortugas ha compartido salida (misma fecha, hora y cancha)', list:P.filter(p=>p.partners.length).sort((a,b)=>b.partners.length-a.partners.length), v:p=>p.partners.length },
+  ];
+  const rkRows = DATA.ranking.categorias.flatMap(c=>c.jugadores.map(j=>({...j, cat:c.nombre, total:c.total, p:byCode[j.codigo]})));
+  return `<section class="panel flat"><div class="panel-h"><h2>Rankings</h2><p>Dieciséis tablas para pelear en el chat. Todas salen de las últimas 20 rondas de cada uno y de sus tarjetas hoyo a hoyo.</p></div></section>
+  <section class="panel"><div class="panel-h"><h3>Tortugas en el Ranking Nacional de Aficionados</h3><p>Publicado por Fedegolf el ${fmtLong(DATA.ranking.publicado)}. Solo entran quienes suman puntos en torneos federados.</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Jugador</th><th>Categoría</th><th class="r">Posición</th><th class="r">Puntos</th><th class="r">Eventos</th><th>Movimiento</th></tr></thead><tbody>
+    ${rkRows.map(r=>`<tr class="click" data-code="${r.codigo}"><td>${esc(r.p.corto)}</td><td>${esc(r.cat)}</td><td class="r num"><b>#${r.pos}</b> <span class="muted">de ${r.total}</span></td><td class="r num">${r.pts}</td><td class="r num">${r.eventos}</td><td>${r.mov==='Subió'?`<span class="pill g">▲ ${r.movN}</span>`:r.mov==='Bajó'?`<span class="pill b">▼ ${r.movN}</span>`:'<span class="pill n">=</span>'}</td></tr>`).join('')}
+    </tbody></table></div></section>
+  <div class="boards">${boards.map(b => `<section class="panel board"><h3>${b.t}</h3><ol>${b.list.slice(0,10).map((p,i)=>`<li class="${i===0?'top':''}" data-code="${p.codigo}" role="button" tabindex="0"><span class="k">${i+1}</span><span class="n">${esc(p.corto)}</span><span class="v">${b.v(p)}</span></li>`).join('')}</ol><p class="foot">${b.f}</p></section>`).join('')}</div>`;
+};
+
+views.actividad = () => {
+  const cnt = {}; P.forEach(p => { cnt[p.codigo] = {}; p.rondas.forEach(r => { const m = r.fecha.slice(0,7); cnt[p.codigo][m] = (cnt[p.codigo][m]||0)+1; }); });
+  const tot = months.map(m => P.reduce((s,p)=>s+(cnt[p.codigo][m]||0),0));
+  const order = P.slice().sort((a,b)=>b.st.n365-a.st.n365 || a.indice-b.indice);
+  const cls = n => n===0?'':n===1?'c1':n<=2?'c2':n<=4?'c3':'c4';
+  // monthly group rounds bar
+  const maxT = Math.max(...tot,1);
+  const W=720,H=160,bw=W/12;
+  const bars = tot.map((t,i)=>`<rect x="${i*bw+6}" y="${H-28-(t/maxT)*(H-50)}" width="${bw-12}" height="${(t/maxT)*(H-50)}" rx="4" fill="var(--accent)" data-tip="${MESES[+months[i].slice(5)-1]} ${months[i].slice(0,4)}: ${t} rondas"/><text x="${i*bw+bw/2}" y="${H-10}" text-anchor="middle">${MESES[+months[i].slice(5)-1]}</text><text x="${i*bw+bw/2}" y="${H-32-(t/maxT)*(H-50)}" text-anchor="middle" fill="var(--fg)">${t||''}</text>`).join('');
+  // courses by group in year
+  const yr = allRounds.filter(r=>daysBetween(r.fecha,TODAY)<=365);
+  const byC = {}; yr.forEach(r => { byC[r.cancha] = byC[r.cancha]||{n:0,who:new Set()}; byC[r.cancha].n++; byC[r.cancha].who.add(r.p.codigo); });
+  const courses = Object.entries(byC).sort((a,b)=>b[1].n-a[1].n);
+  // partners
+  const pairs = {}; sharedRounds.forEach(g => { for (let i=0;i<g.who.length;i++) for (let j=i+1;j<g.who.length;j++) { const k=[g.who[i],g.who[j]].sort().join('-'); pairs[k]=(pairs[k]||0)+1; } });
+  const topPairs = Object.entries(pairs).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const recentShared = sharedRounds.sort((a,b)=>a.fecha<b.fecha?1:-1).slice(0,8);
+  return `
+  <section class="panel">
+    <div class="panel-h"><h2>Rondas del grupo por mes</h2><p>Suma de rondas reportadas por las 23 tortugas en los últimos 12 meses.</p></div>
+    <div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rondas por mes">${bars}</svg></div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h2>¿Quién ha jugado?</h2><p>Rondas por jugador y mes. Ordenado por rondas en el último año. Toca un nombre para ver su ficha.</p></div>
+    <div class="heat-wrap"><div class="heat">
+      <div class="hrow"><span></span>${months.map(m=>`<span class="hm">${MESES[+m.slice(5)-1]}</span>`).join('')}<span class="hm">año</span></div>
+      ${order.map(p=>`<div class="hrow"><span class="hn" data-code="${p.codigo}" role="button" tabindex="0">${esc(p.corto)}</span>${months.map(m=>{const n=cnt[p.codigo][m]||0;return `<span class="cell ${cls(n)}" data-tip="${esc(p.corto)} · ${MESES[+m.slice(5)-1]} ${m.slice(0,4)}: ${n} ronda${n===1?'':'s'}">${n||''}</span>`}).join('')}<span class="ht">${p.st.n365}</span></div>`).join('')}
+    </div></div>
+    <p class="note" style="margin-top:10px">Solo se ven las últimas 20 rondas de cada jugador en Fedegolf, así que quien juega mucho puede tener meses "vacíos" al principio del año aunque sí haya jugado.</p>
+  </section>
+  <section class="grid g2">
+    <div class="panel">
+      <div class="panel-h"><h3>Salidas compartidas</h3><p>Parejas que más veces han jugado juntas (misma fecha, hora de salida y cancha).</p></div>
+      <div class="board"><ol>${topPairs.map(([k,n],i)=>{const [a,b]=k.split('-').map(c=>byCode[c]);return `<li class="${i===0?'top':''}"><span class="k">${i+1}</span><span class="n">${esc(a.corto)} + ${esc(b.corto)}</span><span class="v">${n}</span></li>`}).join('')}</ol></div>
+      ${topPairs.length?'':'<p class="muted">Sin salidas compartidas detectadas.</p>'}
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Últimas salidas en grupo</h3><p>Rondas donde dos o más tortugas salieron juntas.</p></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Fecha</th><th>Cancha</th><th>Quiénes</th></tr></thead><tbody>
+      ${recentShared.map(g=>`<tr><td class="num">${fmtDate(g.fecha)}</td><td>${esc(g.cancha)}</td><td style="white-space:normal">${g.who.map(c=>esc(byCode[c].corto.split(' ')[0]+' '+byCode[c].corto.split(' ').slice(1).join(' ')[0]+'.')).join(', ')}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h3>Próximos torneos federados</h3><p>Calendario publicado por Fedegolf a la fecha de actualización.</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Fechas</th><th>Torneo</th><th>Club</th><th>División</th></tr></thead><tbody>
+    ${DATA.torneos.map(t=>`<tr><td class="num">${fmtDate(t.inicio)}${t.fin!==t.inicio?' – '+fmtDate(t.fin):''}</td><td style="white-space:normal">${esc(t.nombre)}</td><td>${esc(t.club)} <span class="muted">· ${esc(t.ciudad)}</span></td><td class="muted">${esc(t.division)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h3>Canchas visitadas en el último año</h3></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Cancha</th><th class="r">Rondas</th><th class="r">Tortugas</th></tr></thead><tbody>
+    ${courses.map(([c,v])=>`<tr><td>${esc(c)}</td><td class="r num">${v.n}</td><td class="r num">${v.who.size}</td></tr>`).join('')}
+    </tbody></table></div>
+  </section>`;
+};
+
+views.campos = () => {
+  // Llano Grande hole difficulty (group), all tees (same pars)
+  const LG = allRounds.filter(r => r.cancha === 'Llano Grande' && validCard(r));
+  const pars = LG[0].pars, vent = LG[0].vent;
+  const holeAvg = Array.from({length:18},(_,i)=>avg(LG.map(r=>r.scores[i]-pars[i])));
+  const holeBird = Array.from({length:18},(_,i)=>LG.filter(r=>r.scores[i]-pars[i]<=-1).length/LG.length);
+  const holeBlow = Array.from({length:18},(_,i)=>LG.filter(r=>r.scores[i]-pars[i]>=2).length/LG.length);
+  const rankHard = holeAvg.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v);
+  const hardest = rankHard.slice(0,3), easiest = rankHard.slice(-3).reverse();
+  const mx = Math.max(...holeAvg);
+  // per-course group stats
+  const byC = {}; allRounds.forEach(r => { const k = r.cancha; byC[k] = byC[k]||{n:0, difs:[], gross:[], who:new Set(), tees:new Set(), club:r.club, cr:r.cr, slope:r.slope, par:r.par, best:null}; const c=byC[k]; c.n++; c.difs.push(r.dif); if (r.hoyos===18&&r.gross) c.gross.push(r.gross); c.who.add(r.p.codigo); c.tees.add(r.marca); if (!c.best || r.dif < c.best.dif) c.best = r; });
+  const courses = Object.entries(byC).sort((a,b)=>b[1].n-a[1].n);
+  // best rounds at Llano Grande
+  const bestLG = allRounds.filter(r=>r.cancha==='Llano Grande'&&r.hoyos===18).sort((a,b)=>a.gross-b.gross||a.dif-b.dif).slice(0,10);
+  // hole-in-one / eagle log
+  const eagles = []; allRounds.filter(validCard).forEach(r => r.scores.forEach((s,i)=>{ if (s-r.pars[i] <= -2) eagles.push({p:r.p, fecha:r.fecha, cancha:r.cancha, hole:i+1, par:r.pars[i], s}); }));
+  eagles.sort((a,b)=>a.fecha<b.fecha?1:-1);
+  return `
+  <section class="panel">
+    <div class="panel-h"><h2>Llano Grande, hoyo por hoyo</h2><p>Promedio de golpes sobre par del grupo en cada hoyo, con ${LG.length} tarjetas de 18 hoyos. Rojo: los tres más difíciles; azul: los tres más fáciles.</p></div>
+    <div class="holes-wrap"><div class="holes">${holeAvg.map((v,i)=>`<div class="h" data-tip="Hoyo ${i+1} · par ${pars[i]} · ventaja ${vent[i]}\n${fmtSigned(v)} sobre par en promedio\nbirdie o mejor: ${Math.round(holeBird[i]*100)}% · doble o peor: ${Math.round(holeBlow[i]*100)}%"><b>${fmtSigned(v)}</b><i class="${hardest.some(h=>h.i===i)?'hard':easiest.some(h=>h.i===i)?'easy':''}" style="height:${v/mx*78}%"></i><b>${i+1}</b></div>`).join('')}</div></div>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="tile"><div class="l">Hoyos más difíciles</div><div class="v" style="font-size:1.1rem">${hardest.map(h=>`#${h.i+1} (par ${pars[h.i]}, ${fmtSigned(h.v)})`).join('<br>')}</div></div>
+      <div class="tile"><div class="l">Hoyos más amables</div><div class="v" style="font-size:1.1rem">${easiest.map(h=>`#${h.i+1} (par ${pars[h.i]}, ${fmtSigned(h.v)})`).join('<br>')}</div></div>
+      <div class="tile"><div class="l">Ida vs. vuelta</div><div class="v" style="font-size:1.1rem">${fmtSigned(holeAvg.slice(0,9).reduce((a,b)=>a+b,0))} · ${fmtSigned(holeAvg.slice(9).reduce((a,b)=>a+b,0))}</div><div class="l">sobre par, promedio del grupo</div></div>
+    </div>
+  </section>
+  <section class="grid g2">
+    <div class="panel">
+      <div class="panel-h"><h3>Mejores rondas en Llano Grande</h3><p>Gross más bajo entre todas las tarjetas del grupo.</p></div>
+      <div class="tbl-wrap"><table><thead><tr><th>#</th><th>Jugador</th><th class="r">Gross</th><th class="r">Dif.</th><th>Marcas</th><th>Fecha</th></tr></thead><tbody>
+      ${bestLG.map((r,i)=>`<tr class="click" data-code="${r.p.codigo}"><td class="num muted">${i+1}</td><td>${esc(r.p.corto)}</td><td class="r num"><b>${r.gross}</b></td><td class="r num">${fmtSigned(r.dif)}</td><td>${esc(r.marca)}</td><td class="num">${fmtDate(r.fecha)}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Libro de eagles</h3><p>Hoyos jugados en dos golpes bajo par o mejor, en todas las canchas.</p></div>
+      ${eagles.length ? `<div class="tbl-wrap"><table><thead><tr><th>Jugador</th><th>Cancha</th><th class="r">Hoyo</th><th class="r">Score</th><th>Fecha</th></tr></thead><tbody>${eagles.map(e=>`<tr class="click" data-code="${e.p.codigo}"><td>${esc(e.p.corto)}</td><td>${esc(e.cancha)}</td><td class="r num">${e.hole} (par ${e.par})</td><td class="r num"><b>${e.s}</b>${e.s===1?' 🕳️':''}</td><td class="num">${fmtDate(e.fecha)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted">Todavía ninguna tortuga ha hecho eagle en las tarjetas disponibles.</p>'}
+    </div>
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h3>Todas las canchas del grupo</h3><p>Dónde han jugado las tortugas en sus últimas 20 rondas y cómo les fue.</p></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Cancha</th><th>Club</th><th class="r">Rondas</th><th class="r">Tortugas</th><th class="r">Dif. prom.</th><th class="r">Gross prom.</th><th>Mejor ronda</th></tr></thead><tbody>
+    ${courses.map(([c,v])=>`<tr><td>${esc(c)}</td><td class="muted">${esc(v.club)}</td><td class="r num">${v.n}</td><td class="r num">${v.who.size}</td><td class="r num">${d2(avg(v.difs))}</td><td class="r num">${v.gross.length?d2(avg(v.gross)):'—'}</td><td>${v.best?`${esc(v.best.p.corto)} · ${v.best.gross||'—'} (${fmtSigned(v.best.dif)})`:''}</td></tr>`).join('')}
+    </tbody></table></div>
+  </section>`;
+};
+
+views.jugadores = (code) => {
+  if (code && byCode[code]) return playerDetail(byCode[code]);
+  const sorted = P.slice().sort((a,b)=>a.indice-b.indice);
+  return `<section class="panel flat"><div class="panel-h"><h2>Las 23 tortugas</h2><p>Toca una ficha para ver el índice histórico, las últimas 20 rondas, la tarjeta hoyo a hoyo de cada ronda y con quién suele salir.</p></div></section>
+  <div class="pgrid">${sorted.map(p=>`<button class="pcard" data-code="${p.codigo}"><div class="hd"><span class="av">${initials(p.corto)}</span><span class="nm">${esc(p.corto)}<small>${esc(p.cat.replace(' Caballeros',''))}</small></span><span class="ix">${d2(p.indice)}</span></div>${spark(p.st.hist.map(h=>h.indice),200,34)}<div class="meta"><span>${deltaPill(p.st.d90)}</span><span>${p.st.daysSince===null?'':p.st.daysSince===0?'jugó hoy':p.st.daysSince+' d sin jugar'}</span></div></button>`).join('')}</div>`;
+};
+
+/* ---- extra derived data for the player report ---- */
+const COURSE_TEES = (() => {
+  const m = {};
+  allRounds.forEach(r => { const k = `${r.cancha}|${r.marca}`; if (!m[k]) m[k] = { cancha:r.cancha, club:r.club, marca:r.marca, cr:r.cr, slope:r.slope, par:r.par, n:0 }; m[k].n++; });
+  TEES.forEach(t => { const k = `Llano Grande|${t.yd} Caballeros`; m[k] = { cancha:'Llano Grande', club:'CC Medellin', marca:`${t.nombre} · ${t.yd}`, cr:t.cr, slope:t.slope, par:t.par, n:(m[k]?m[k].n:0), lg:true, ord:TEES.indexOf(t) }; });
+  return Object.values(m).sort((a,b)=> (a.lg?0:1)-(b.lg?0:1) || (a.ord??0)-(b.ord??0) || b.n-a.n);
+})();
+const LG_GROUP = (() => { const LG = allRounds.filter(r => r.cancha === 'Llano Grande' && validCard(r)); if (!LG.length) return null; const pars = LG[0].pars; return { n:LG.length, pars, avg: Array.from({length:18},(_,i)=>avg(LG.map(r=>r.scores[i]-pars[i]))) }; })();
+const rankingFor = code => DATA.ranking.categorias.flatMap(c => c.jugadores.filter(j=>j.codigo===code).map(j=>({...j, cat:c.nombre, total:c.total})));
+const dayWinners = (() => { // for each shared round, who had the lowest differential
+  const w = {}; sharedRounds.forEach(g => { const rs = g.who.map(c => { const r = byCode[c].rondas.find(x=>`${x.fecha}|${x.hora}|${x.cancha}`===g.key); return r? {c, dif:r.dif}:null; }).filter(Boolean); if (rs.length<2) return; const best = Math.min(...rs.map(x=>x.dif)); rs.forEach(x => { w[x.c] = w[x.c]||{n:0,wins:0}; w[x.c].n++; if (x.dif===best) w[x.c].wins++; }); }); return w; })();
+function personalRecords(p) {
+  const cards = p.rondas.filter(validCard).slice().sort((a,b)=>a.fecha<b.fecha?-1:1);
+  if (!cards.length) return null;
+  const nine = (r,a,b) => r.scores.slice(a,b).reduce((x,y)=>x+y,0) - r.pars.slice(a,b).reduce((x,y)=>x+y,0);
+  const bestOut = cards.reduce((m,r)=>{ const v=nine(r,0,9); return (!m||v<m.v)?{v,r}:m; },null);
+  const bestIn = cards.reduce((m,r)=>{ const v=nine(r,9,18); return (!m||v<m.v)?{v,r}:m; },null);
+  const birdieRound = cards.reduce((m,r)=>{ const v=r.scores.filter((s,i)=>s-r.pars[i]<=-1).length; return (!m||v>m.v)?{v,r}:m; },null);
+  let streak=0, best=0, bestEnd=null, cur=0;
+  cards.forEach(r => r.scores.forEach((s,i) => { if (s-r.pars[i] >= 2) { cur = 0; } else { cur++; if (cur>best) { best=cur; bestEnd={r,i}; } } }));
+  const parStreak = (()=>{ let b=0,c=0; cards.forEach(r=>r.scores.forEach((s,i)=>{ if (s-r.pars[i]<=0){c++; b=Math.max(b,c);} else c=0; })); return b; })();
+  const cleanRounds = cards.filter(r=>r.scores.every((s,i)=>s-r.pars[i]<2)).length;
+  return { bestOut, bestIn, birdieRound, noDoubleStreak:best, parStreak, cleanRounds, nCards:cards.length };
+}
+function nextLiquidation(p) {
+  const R = p.r20; if (R.length < 20) return null;
+  const difs = R.map(r=>r.dif);
+  const sorted = difs.slice().sort((a,b)=>a-b);
+  const eighth = sorted[7];
+  const oldest = R[R.length-1];
+  const remaining = difs.slice(0,19).slice().sort((a,b)=>a-b).slice(0,8);
+  const ifBad = avg(remaining); // index if the next round does not enter the top 8
+  return { eighth, oldest, ifBad, counting: sorted.slice(0,8) };
+}
+function grossNeeded(dif, t) { return Math.floor(dif * t.slope / 113 + t.cr + 1e-9); }
+
+function playerDetail(p) {
+  const s = p.st, h = p.hs;
+  const R = p.rondas, W = p.r20;
+  const idxSeries = [{ name:'Índice', color:'var(--s1)', area:true, points: s.hist.map(e=>({x:e.fecha, y:e.indice, label:`${fmtLong(e.fecha)}\níndice ${d2(e.indice)} (${e.tipo==='corte'?'al corte':'al día'})`})) }];
+  const difSeries = [{ name:'Diferencial', color:'var(--s2)', points: W.map(r=>({x:r.fecha, y:r.dif, hl:r.cuenta, big:r.cuenta, label:`${fmtLong(r.fecha)} · ${r.cancha}\n${r.gross?r.gross+' golpes':'score no disponible'} · diferencial ${fmtSigned(r.dif)}${r.cuenta?'\n★ cuenta para el índice':''}`})) }];
+  const distTotal = h.holes || 1;
+  const dist = [['Eagle o mejor',h.eagle,'#e5b839'],['Birdie',h.birdie,'var(--good)'],['Par',h.par,'var(--line)'],['Bogey',h.bogey,'color-mix(in srgb,var(--bad) 45%,var(--card))'],['Doble',h.dbl,'color-mix(in srgb,var(--bad) 75%,var(--card))'],['Triple o peor',h.tri,'var(--bad)']];
+  const rank = P.slice().sort((a,b)=>a.indice-b.indice).findIndex(x=>x.codigo===p.codigo)+1;
+  const rk = rankingFor(p.codigo);
+  const liq = p.liquidaciones || [];
+  const liqNow = liq[0];
+  const capNow = liqNow && liqNow.prom8 !== null && liqNow.publicado !== null && Math.abs(liqNow.prom8 - liqNow.publicado) > 0.01;
+  const capHist = liq.filter(l => l.prom8 !== null && l.publicado !== null && Math.abs(l.prom8 - l.publicado) > 0.01);
+  const nl = nextLiquidation(p);
+  const myTee = teeById(teeFor(p));
+  const lgCards = R.filter(r => r.cancha==='Llano Grande' && validCard(r));
+  const counting = W.filter(r=>r.cuenta).slice().sort((a,b)=>a.dif-b.dif);
+  const lgAvg = lgCards.length >= 3 ? Array.from({length:18},(_,i)=>({par:lgCards[0].pars[i], avg:avg(lgCards.map(r=>r.scores[i])), over:avg(lgCards.map(r=>r.scores[i]-r.pars[i])), bird:lgCards.filter(r=>r.scores[i]-r.pars[i]<=-1).length/lgCards.length, blow:lgCards.filter(r=>r.scores[i]-r.pars[i]>=2).length/lgCards.length})) : null;
+  const rec = personalRecords(p);
+  const dw = dayWinners[p.codigo];
+  const lgMine = lgCards.length >= 3 && LG_GROUP ? Array.from({length:18},(_,i)=>avg(lgCards.map(r=>r.scores[i]-r.pars[i]))) : null;
+  const lgDiff = lgMine ? lgMine.map((v,i)=>({i, mine:v, grp:LG_GROUP.avg[i], d:v-LG_GROUP.avg[i]})) : null;
+  const strengths = lgDiff ? lgDiff.slice().sort((a,b)=>a.d-b.d).slice(0,3) : [];
+  const weaknesses = lgDiff ? lgDiff.slice().sort((a,b)=>b.d-a.d).slice(0,3) : [];
+  const sfBase = 'https://servicios.federacioncolombianadegolf.com';
+  const partnersH2H = p.partners.slice(0,8).map(x => { const g = sharedRounds.filter(g=>g.who.includes(p.codigo)&&g.who.includes(x.p.codigo)); let w=0,l=0; g.forEach(gg=>{ const ra=p.rondas.find(r=>`${r.fecha}|${r.hora}|${r.cancha}`===gg.key), rb=x.p.rondas.find(r=>`${r.fecha}|${r.hora}|${r.cancha}`===gg.key); if(ra&&rb){ if(ra.dif<rb.dif) w++; else if (rb.dif<ra.dif) l++; } }); return {...x, w, l}; });
+
+  return `
+  <button class="back" data-nav="jugadores">← Todas las tortugas</button>
+  <section class="phead">
+    <div>
+      <div class="eyebrow" style="color:var(--hero-muted)">#${rank} del grupo · código Fedegolf ${p.codigo}</div>
+      <div class="nm">${esc(p.nombre)}</div>
+      <div class="sub">${esc(p.cat)} · CC Medellín · marcas ${esc(p.marcas.toLowerCase())}</div>
+      <div class="badges">
+        ${rk.map(r=>`<span class="badge" data-tip="Ranking Nacional Fedegolf publicado ${fmtLong(DATA.ranking.publicado)}: ${r.pts} puntos en ${r.eventos} evento${r.eventos===1?'':'s'} (promedio ${r.prom}). Movimiento: ${r.mov}${r.movN?' '+r.movN:''}.">🏅 #${r.pos} de ${r.total} · ${esc(r.cat.replace(' Caballeros',''))}</span>`).join('')}
+        ${capNow?`<span class="badge warn" data-tip="Fedegolf publica ${d2(liqNow.publicado)} aunque el promedio de tus 8 mejores es ${d2(liqNow.prom8)}: el WHS limita cuánto puede subir el índice frente a tu mínimo de los últimos 12 meses.">⛔ tope (cap) aplicado</span>`:''}
+        ${s.n365>=10?`<span class="badge">🔥 ${s.n365} rondas en el año</span>`:''}
+        ${p.indice<=0?`<span class="badge">⭐ scratch</span>`:''}
+      </div>
+    </div>
+    <div style="margin-left:auto;text-align:right"><div class="eyebrow" style="color:var(--hero-muted)">Índice WHS</div><div class="big">${d2(p.indice)}</div><div class="sub">hcp ${courseHcp(p.indice,myTee)} en Llano Grande (${esc(myTee.nombre.toLowerCase())})</div></div>
+    <div class="kv">
+      <span>Hace 30 días</span><b>${s.idx30===null?'—':d2(s.idx30)} ${s.d30===null?'':`(${fmtSigned(s.d30)})`}</b>
+      <span>Hace 3 meses</span><b>${s.idx90===null?'—':d2(s.idx90)} ${s.d90===null?'':`(${fmtSigned(s.d90)})`}</b>
+      <span>Hace 1 año</span><b>${s.idx365===null?'—':d2(s.idx365)} ${s.d365===null?'':`(${fmtSigned(s.d365)})`}</b>
+      <span>Mínimo / máximo visible</span><b>${d2(s.idxMin)} / ${d2(s.idxMax)}</b>
+    </div>
+  </section>
+  <nav class="subnav" aria-label="Secciones del informe">
+    <a href="#r-resumen">Resumen</a><a href="#r-indice">Tu índice</a><a href="#r-records">Récords</a><a href="#r-hoyos">Hoyo a hoyo</a><a href="#r-social">Con quién</a><a href="#r-rondas">Rondas</a><a href="#r-docs">Certificados</a>
+  </nav>
+  <section class="panel" id="r-resumen">
+    <div class="tiles">
+      <div class="tile"><div class="v">${s.n365}</div><div class="l">rondas en el último año</div></div>
+      <div class="tile"><div class="v">${s.daysSince}</div><div class="l">días desde la última ronda (${fmtDate(s.lastRound)})</div></div>
+      <div class="tile"><div class="v">${s.avgGross?d2(s.avgGross):'—'}</div><div class="l">gross promedio (18 hoyos)</div></div>
+      <div class="tile"><div class="v">${s.bestGross||'—'}</div><div class="l">mejor gross</div></div>
+      <div class="tile"><div class="v">${d2(s.avgDif)}</div><div class="l">diferencial promedio (20 vigentes)</div></div>
+      ${s.n>s.n20?`<div class="tile"><div class="v">${s.n}</div><div class="l">rondas en el archivo del tablero (${s.n-s.n20} ya no están en Fedegolf)</div></div>`:''}
+      <div class="tile"><div class="v">${fmtSigned(s.bestDif)}</div><div class="l">mejor diferencial</div></div>
+      <div class="tile"><div class="v">${s.stdDif?d2(s.stdDif):'—'}</div><div class="l">desviación (consistencia)</div></div>
+      <div class="tile"><div class="v">${h.rounds?h.birdiesPerRound.toFixed(2):'—'}</div><div class="l">birdies por ronda</div></div>
+    </div>
+  </section>
+
+  <section class="panel" id="r-indice">
+    <div class="panel-h"><h3>Cómo se arma tu índice</h3><p>Según la liquidación de Fedegolf del ${liqNow?fmtLong(liqNow.fecha):'—'}: ${liqNow&&liqNow.n?`${liqNow.n} diferenciales en el registro`:''}${liqNow&&liqNow.prom8!==null?`, promedio de los 8 mejores ${d2(liqNow.prom8)}`:''}${capNow?`, publicado ${d2(liqNow.publicado)} por tope`:''}.</p></div>
+    <div class="grid g2">
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">Los ${counting.length} diferenciales que cuentan hoy</div>
+        <div class="chips">${counting.map(r=>`<span class="chip" data-tip="${fmtLong(r.fecha)} · ${esc(r.cancha)} · ${r.gross??'—'} golpes">${fmtSigned(r.dif)}<small>${fmtDate(r.fecha)}</small></span>`).join('')}</div>
+        ${counting.length?`<p class="note" style="margin-top:8px">Promedio: <b>${d2(avg(counting.map(r=>r.dif)))}</b>. El que más pesa es el <b>${fmtSigned(counting[counting.length-1].dif)}</b> del ${fmtDate(counting[counting.length-1].fecha)}: cualquier ronda con diferencial menor lo reemplaza y baja tu índice.</p>`:''}
+      </div>
+      <div class="tiles" style="grid-template-columns:1fr 1fr">
+        ${nl?`<div class="tile"><div class="v">${fmtSigned(nl.eighth)}</div><div class="l">diferencial a batir para bajar el índice</div></div>
+        <div class="tile"><div class="v">${grossNeeded(nl.eighth, myTee)}</div><div class="l">gross o menos en Llano Grande (${esc(myTee.nombre.toLowerCase())}) para lograrlo</div></div>
+        <div class="tile"><div class="v">${fmtSigned(nl.oldest.dif)} ${nl.oldest.cuenta?'<span class="star">★</span>':''}</div><div class="l">la ronda que se cae con tu próxima tarjeta (${fmtDate(nl.oldest.fecha)})${nl.oldest.cuenta?' · hoy cuenta':' · hoy no cuenta'}</div></div>
+        <div class="tile"><div class="v">${d2(nl.ifBad)}</div><div class="l">índice si tu próxima ronda no entra entre las 8 mejores${nl.ifBad>p.indice+0.04?' <span class="neg">(sube)</span>':nl.ifBad<p.indice-0.04?' <span class="pos">(baja)</span>':' (igual)'}</div></div>`:
+        `<div class="tile" style="grid-column:1/-1"><div class="v">${R.length}</div><div class="l">rondas en el registro. Con menos de 20, el WHS usa menos diferenciales (y un ajuste) para calcular el índice; cada ronda nueva pesa mucho.</div></div>`}
+      </div>
+    </div>
+    ${capHist.length?`<p class="note" style="margin-top:12px"><b>Tope WHS:</b> Fedegolf te aplicó tope en ${capHist.length} de las últimas ${liq.length} liquidaciones (la más reciente, ${fmtLong(capHist[0].fecha)}: promedio ${d2(capHist[0].prom8)}, publicado ${d2(capHist[0].publicado)}). El soft cap frena la subida a partir de 3.0 sobre tu índice mínimo de 12 meses y el hard cap la limita a 5.0.</p>`:''}
+    <details class="dt" style="margin-top:12px"><summary>Historial de liquidaciones (${liq.length})</summary>
+      <div class="tbl-wrap"><table><thead><tr><th>Fecha</th><th>Tipo</th><th class="r">Dif. usados</th><th class="r">Prom. 8 mejores</th><th class="r">Índice publicado</th><th></th></tr></thead><tbody>
+      ${liq.map(l=>{ const pub = l.publicado!==null?l.publicado:(s.hist.find(h=>h.fecha===l.fecha)||{}).indice; const cap = l.prom8!==null&&l.publicado!==null&&Math.abs(l.prom8-l.publicado)>0.01; return `<tr><td class="num">${fmtDate(l.fecha)}</td><td class="muted">${l.tipo==='corte'?'al corte':'al día'}</td><td class="r num">${l.n??'—'}</td><td class="r num">${l.prom8!==null?l.prom8.toFixed(3):'—'}</td><td class="r num"><b>${pub!==undefined&&pub!==null?d2(pub):'—'}</b></td><td>${cap?'<span class="pill b">tope</span>':''}</td></tr>`}).join('')}
+      </tbody></table></div>
+    </details>
+  </section>
+
+  <section class="grid g2">
+    <div class="panel">
+      <div class="panel-h"><h3>Evolución del índice</h3><p>Liquidaciones al corte (fin de mes) y al día, según Fedegolf.</p></div>
+      <div class="chart">${lineChart(idxSeries,{h:220,aria:'Índice histórico'})}</div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Últimas 20 rondas</h3><p>Diferencial de cada ronda. En <span style="color:var(--amber);font-weight:600">ámbar</span>, las 8 que cuentan para el índice.</p></div>
+      <div class="chart">${lineChart(difSeries,{h:220,aria:'Diferenciales', refY:p.indice, refLabel:'índice '+d2(p.indice)})}</div>
+    </div>
+  </section>
+
+  ${rec ? `
+  <section class="panel" id="r-records">
+    <div class="panel-h"><h3>Récords personales</h3><p>Con las ${rec.nCards} tarjetas de 18 hoyos disponibles.</p></div>
+    <div class="tiles">
+      <div class="tile"><div class="v">${s.bestGross}</div><div class="l">mejor gross · ${(()=>{const r=R.find(x=>x.gross===s.bestGross&&x.hoyos===18);return r?`${esc(r.cancha)}, ${fmtDate(r.fecha)}`:''})()}</div></div>
+      <div class="tile"><div class="v">${rec.bestOut.r.scores.slice(0,9).reduce((a,b)=>a+b,0)} <small class="muted" style="font-size:.9rem">(${fmtSigned(rec.bestOut.v)})</small></div><div class="l">mejor ida · ${esc(rec.bestOut.r.cancha)}, ${fmtDate(rec.bestOut.r.fecha)}</div></div>
+      <div class="tile"><div class="v">${rec.bestIn.r.scores.slice(9).reduce((a,b)=>a+b,0)} <small class="muted" style="font-size:.9rem">(${fmtSigned(rec.bestIn.v)})</small></div><div class="l">mejor vuelta · ${esc(rec.bestIn.r.cancha)}, ${fmtDate(rec.bestIn.r.fecha)}</div></div>
+      <div class="tile"><div class="v">${rec.birdieRound.v}</div><div class="l">birdies o mejor en una ronda · ${esc(rec.birdieRound.r.cancha)}, ${fmtDate(rec.birdieRound.r.fecha)}</div></div>
+      <div class="tile"><div class="v">${rec.noDoubleStreak}</div><div class="l">hoyos seguidos sin doble bogey (racha más larga)</div></div>
+      <div class="tile"><div class="v">${rec.parStreak}</div><div class="l">hoyos seguidos en par o mejor (racha más larga)</div></div>
+      <div class="tile"><div class="v">${rec.cleanRounds}</div><div class="l">rondas limpias (sin ningún doble)</div></div>
+      ${dw?`<div class="tile"><div class="v">${dw.wins}<small class="muted" style="font-size:1rem">/${dw.n}</small></div><div class="l">veces que fuiste el mejor diferencial del grupo con el que saliste</div></div>`:''}
+      ${h.eagle?`<div class="tile"><div class="v">${h.eagle}</div><div class="l">eagle${h.eagle===1?'':'s'} en las tarjetas</div></div>`:''}
+    </div>
+  </section>` : ''}
+
+  ${lgAvg ? `
+  <section class="panel" id="r-hoyos">
+    <div class="panel-h"><h3>Tu promedio por hoyo en Llano Grande</h3><p>Golpes promedio en cada hoyo sobre ${lgCards.length} tarjetas de 18. La barra es cuánto sobre par; el número de arriba, tu score promedio.</p></div>
+    <div class="holes-wrap"><div class="holes">${(()=>{const mx=Math.max(...lgAvg.map(x=>x.over),0.01);return lgAvg.map((x,i)=>`<div class="h" data-tip="Hoyo ${i+1} · par ${x.par}\npromedio ${x.avg.toFixed(2)} (${fmtSigned(x.over)})\nbirdie o mejor: ${Math.round(x.bird*100)}% · doble o peor: ${Math.round(x.blow*100)}%"><b>${x.avg.toFixed(1)}</b><i class="${x.over<=0?'easy':x.over>=1?'hard':''}" style="height:${Math.max(x.over,0)/mx*78}%"></i><b>${i+1}<span class="muted" style="font-size:.6rem"> p${x.par}</span></b></div>`).join('')})()}</div></div>
+    <div class="tiles" style="margin-top:12px">
+      <div class="tile"><div class="v">${lgAvg.slice(0,9).reduce((a,x)=>a+x.avg,0).toFixed(1)}</div><div class="l">ida promedio (par ${lgAvg.slice(0,9).reduce((a,x)=>a+x.par,0)})</div></div>
+      <div class="tile"><div class="v">${lgAvg.slice(9).reduce((a,x)=>a+x.avg,0).toFixed(1)}</div><div class="l">vuelta promedio (par ${lgAvg.slice(9).reduce((a,x)=>a+x.par,0)})</div></div>
+      <div class="tile"><div class="v">${lgAvg.reduce((a,x)=>a+x.avg,0).toFixed(1)}</div><div class="l">ronda promedio en Llano Grande</div></div>
+      <div class="tile"><div class="v">#${lgAvg.map((x,i)=>({i,o:x.over})).sort((a,b)=>b.o-a.o)[0].i+1} · #${lgAvg.map((x,i)=>({i,o:x.over})).sort((a,b)=>a.o-b.o)[0].i+1}</div><div class="l">tu hoyo más caro · tu hoyo más barato</div></div>
+    </div>
+  </section>` : ''}
+  ${h.rounds ? `
+  <section class="grid g2" id="r-hoyos-grupo">
+    <div class="panel">
+      <div class="panel-h"><h3>Cómo juegas cada hoyo</h3><p>${h.holes} hoyos en ${h.rounds} tarjetas de 18.</p></div>
+      <div class="dist">${dist.map(([n,v,c])=>v?`<i style="width:${v/distTotal*100}%;background:${c}" data-tip="${n}: ${v} (${Math.round(v/distTotal*100)}%)"></i>`:'').join('')}</div>
+      <div class="dist-l">${dist.map(([n,v,c])=>`<span><i style="background:${c}"></i>${n} <b class="num">${v}</b> <span class="muted">${Math.round(v/distTotal*100)}%</span></span>`).join('')}</div>
+      <div class="tiles" style="margin-top:14px">
+        <div class="tile"><div class="v">${fmtSigned(h.p3avg)}</div><div class="l">sobre par en par 3</div></div>
+        <div class="tile"><div class="v">${fmtSigned(h.p4avg)}</div><div class="l">sobre par en par 4</div></div>
+        <div class="tile"><div class="v">${fmtSigned(h.p5avg)}</div><div class="l">sobre par en par 5</div></div>
+        <div class="tile"><div class="v" style="font-size:1.3rem">${fmtSigned(h.frontAvg)} · ${fmtSigned(h.backAvg)}</div><div class="l">ida · vuelta (sobre par)</div></div>
+      </div>
+      ${h.worst?`<p class="note" style="margin-top:12px">Peor hoyo registrado: un <b>${h.worst.s}</b> en el hoyo ${h.worst.hole} (par ${h.worst.par}) de ${esc(h.worst.cancha)}, ${fmtLong(h.worst.fecha)}.</p>`:''}
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Tú vs. el grupo en Llano Grande</h3><p>${lgDiff?`Tu promedio sobre par por hoyo (${lgCards.length} tarjetas) frente al del grupo (${LG_GROUP.n}). Verde: lo juegas mejor que el grupo; rojo: peor.`:'Se necesitan al menos 3 tarjetas de 18 hoyos en Llano Grande.'}</p></div>
+      ${lgDiff?`<div class="holes-wrap"><div class="holes cmp">${lgDiff.map(x=>{const mx=Math.max(...lgDiff.map(y=>Math.abs(y.d)))||1; const hgt=Math.abs(x.d)/mx*45; return `<div class="h" data-tip="Hoyo ${x.i+1} · par ${LG_GROUP.pars[x.i]}\nTú: ${fmtSigned(x.mine)} · grupo: ${fmtSigned(x.grp)}\n${x.d<0?'mejor':'peor'} que el grupo por ${Math.abs(x.d).toFixed(2)}"><span class="up" style="height:${x.d<0?hgt:0}%"></span><span class="mid"></span><span class="dn" style="height:${x.d>0?hgt:0}%"></span><b>${x.i+1}</b></div>`}).join('')}</div></div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="tile"><div class="l">Tus hoyos fuertes</div><div class="v" style="font-size:1rem">${strengths.map(x=>`#${x.i+1} <span class="pos">${(x.d).toFixed(2)}</span> vs grupo`).join('<br>')}</div></div>
+        <div class="tile"><div class="l">Tus hoyos a trabajar</div><div class="v" style="font-size:1rem">${weaknesses.map(x=>`#${x.i+1} <span class="neg">+${(x.d).toFixed(2)}</span> vs grupo`).join('<br>')}</div></div>
+      </div>`:''}
+    </div>
+  </section>` : ''}
+
+  <section class="panel" id="r-social">
+    <div class="panel-h"><h3>Con quién sales y cómo te va</h3><p>Compañeros detectados por misma fecha, hora y cancha. "Balance" cuenta las veces que tu diferencial fue mejor que el de ese compañero en la misma salida.</p></div>
+    ${p.partners.length ? `<div class="tbl-wrap"><table><thead><tr><th>Compañero</th><th class="r">Salidas juntos</th><th class="r">Balance (tú – él)</th><th></th></tr></thead><tbody>${partnersH2H.map(x=>`<tr class="click" data-code="${x.p.codigo}"><td>${esc(x.p.corto)} <span class="muted num">${d2(x.p.indice)}</span></td><td class="r num">${x.n}</td><td class="r num"><b class="${x.w>x.l?'pos':x.l>x.w?'neg':''}">${x.w} – ${x.l}</b></td><td><span class="pill n">ver cara a cara</span></td></tr>`).join('')}</tbody></table></div><p class="note" style="margin-top:8px">${p.sharedN} de tus ${s.n} rondas fueron con otra tortuga.</p>` : '<p class="muted">No apareces compartiendo salida con otra tortuga en tus últimas 20 rondas.</p>'}
+  </section>
+
+  <section class="panel" id="r-rondas">
+    <div class="panel-h"><h3>Historial de rondas</h3><p>Toca una ronda para abrir la tarjeta hoyo a hoyo. ★ = cuenta entre los 8 mejores diferenciales. Las rondas marcadas "archivo" ya salieron de las 20 de Fedegolf pero el tablero las guarda.</p></div>
+    <div class="tbl-wrap"><table class="rtab"><thead><tr><th>Fecha</th><th>Cancha</th><th>Marcas</th><th class="r">CR/Slope</th><th class="r">Gross</th><th class="r">Ajust.</th><th class="r">Dif.</th><th class="r">Hcp campo</th><th></th></tr></thead><tbody>
+    ${R.map((r,i)=>`<tr class="click rr ${r.vigente===false?'arch':''}" data-i="${i}"><td class="num">${fmtDate(r.fecha)}${r.vigente===false?' <span class="pill n" data-tip="Ya no está entre las 20 de Fedegolf; se conserva en el archivo del tablero">archivo</span>':''}</td><td>${esc(r.cancha)}${r.club!=='CC Medellin'?`<span class="muted"> · ${esc(r.club)}</span>`:''}</td><td class="muted">${esc(r.marca)}</td><td class="r num muted">${r.cr}/${r.slope}</td><td class="r num"><b>${r.gross??'—'}</b>${r.hoyos&&r.hoyos!==18?`<span class="muted">/${r.hoyos}</span>`:''}</td><td class="r num">${r.ajustado??'—'}</td><td class="r num">${fmtSigned(r.dif)}</td><td class="r num muted">${r.hcpCampo??'—'}</td><td>${r.cuenta?'<span class="star">★</span>':''}${r.tipo!=='Aceptable'?`<span class="pill b">${esc(r.tipo)}</span>`:''}</td></tr><tr class="sc-row" hidden><td colspan="9">${scorecard(r)}</td></tr>`).join('')}
+    </tbody></table></div>
+  </section>
+
+  <section class="panel" id="r-docs">
+    <div class="panel-h"><h3>Certificados y consulta oficial</h3><p>Documentos generados por Fedegolf con tus datos (se abren en su sitio).</p></div>
+    <div class="links">
+      <a class="lnk" href="${sfBase}/apex/kardex?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">📄 Certificado Kárdex (últimos 20 scores)</a>
+      <a class="lnk" href="${sfBase}/apex/CertificadoDeIndicePDF?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">📄 Certificado de índice</a>
+      <a class="lnk" href="${sfBase}/apex/HistorialJuegoResultadoPp?user=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">🔎 Historial de juego en Fedegolf</a>
+      <a class="lnk" href="https://federacioncolombianadegolf.com/handicap/" target="_blank" rel="noopener">🔎 Consulta de hándicap (código ${p.codigo})</a>
+    </div>
+    <p class="note" style="margin-top:8px">Link directo a esta ficha para compartir: el enlace del tablero seguido de <b class="num">#j-${p.codigo}</b>.</p>
+  </section>`;
+}
+
+function scorecard(r) {
+  if (!r.scores || !r.pars || r.scores.reduce((a,b)=>a+(b||0),0) === 0) return '<p class="muted">Tarjeta no disponible para esta ronda.</p>';
+  const cls = (s,p) => { const d = s-p; return d<=-2?'eag':d===-1?'bir':d===0?'':d===1?'bog':d===2?'dbl':'tri'; };
+  const row = (label, arr, fn, nosum) => `<tr><td>${label}</td>${arr.slice(0,9).map((v,i)=>`<td class="${fn?fn(v,i):''}">${v??''}</td>`).join('')}<td><b>${nosum?'':sum(arr.slice(0,9))}</b></td>${arr.slice(9).map((v,i)=>`<td class="${fn?fn(v,i+9):''}">${v??''}</td>`).join('')}<td><b>${nosum?'':sum(arr.slice(9))}</b></td><td><b>${nosum?'':sum(arr)}</b></td></tr>`;
+  const sum = a => a.reduce((x,y)=>x+(y||0),0);
+  const meta = `${fmtLong(r.fecha)}${r.hora?' · salida '+r.hora:''} · ${esc(r.cancha)} · ${esc(r.marca)} · par ${r.par} · CR ${r.cr} · slope ${r.slope}`;
+  return `<div class="sc"><div class="muted" style="font-size:.8rem;margin-bottom:6px">${meta}</div><div class="tbl-wrap"><table>
+  <thead><tr><th>Hoyo</th>${[1,2,3,4,5,6,7,8,9].map(i=>`<th>${i}</th>`).join('')}<th>Ida</th>${[10,11,12,13,14,15,16,17,18].map(i=>`<th>${i}</th>`).join('')}<th>Vta</th><th>Tot</th></tr></thead>
+  <tbody>${row('Par', r.pars)}${r.vent?row('Vent.', r.vent, null, true):''}${row('Score', r.scores, (v,i)=>cls(v,r.pars[i]))}${r.adj && r.adj.some((v,i)=>v!==r.scores[i])?row('Ajust.', r.adj):''}</tbody></table></div>
+  <div class="dist-l" style="font-size:.72rem"><span><i style="background:#e5b839"></i>eagle</span><span><i style="background:var(--good)"></i>birdie</span><span><i style="background:color-mix(in srgb,var(--bad) 45%,var(--card))"></i>bogey</span><span><i style="background:color-mix(in srgb,var(--bad) 75%,var(--card))"></i>doble</span><span><i style="background:var(--bad)"></i>triple+</span></div></div>`;
+}
+
+views.versus = (a, b) => {
+  const sorted = P.slice().sort((x,y)=>x.indice-y.indice);
+  a = byCode[a] || sorted[0]; b = byCode[b] || sorted[1];
+  const opts = sel => sorted.map(p=>`<option value="${p.codigo}" ${p.codigo===sel.codigo?'selected':''}>${esc(p.corto)} (${d2(p.indice)})</option>`).join('');
+  const rows = [
+    ['Índice', p=>p.indice, v=>d2(v), 'low'],
+    ['Índice hace 3 meses', p=>p.st.idx90, v=>v===null?'—':d2(v), 'low'],
+    ['Diferencial promedio', p=>p.st.avgDif, v=>d2(v), 'low'],
+    ['Mejor diferencial', p=>p.st.bestDif, v=>fmtSigned(v), 'low'],
+    ['Peor diferencial', p=>p.st.worstDif, v=>fmtSigned(v), 'low'],
+    ['Consistencia (σ)', p=>p.st.stdDif, v=>v===null?'—':d2(v), 'low'],
+    ['Gross promedio', p=>p.st.avgGross, v=>v===null?'—':d2(v), 'low'],
+    ['Mejor gross', p=>p.st.bestGross, v=>v??'—', 'low'],
+    ['Rondas último año', p=>p.st.n365, v=>v, 'high'],
+    ['Días sin jugar', p=>p.st.daysSince, v=>v, 'low'],
+    ['Birdies por ronda', p=>p.hs.rounds?p.hs.birdiesPerRound:null, v=>v===null?'—':v.toFixed(2), 'high'],
+    ['% hoyos en par o mejor', p=>p.hs.rounds?p.hs.parPct*100:null, v=>v===null?'—':Math.round(v)+'%', 'high'],
+    ['% dobles o peor', p=>p.hs.rounds?p.hs.blowupPct*100:null, v=>v===null?'—':v.toFixed(1)+'%', 'low'],
+    ['Par 3 (sobre par)', p=>p.hs.p3avg, v=>v===null?'—':fmtSigned(v), 'low'],
+    ['Par 4 (sobre par)', p=>p.hs.p4avg, v=>v===null?'—':fmtSigned(v), 'low'],
+    ['Par 5 (sobre par)', p=>p.hs.p5avg, v=>v===null?'—':fmtSigned(v), 'low'],
+  ];
+  const together = sharedRounds.filter(g=>g.who.includes(a.codigo)&&g.who.includes(b.codigo)).sort((x,y)=>x.fecha<y.fecha?1:-1);
+  const h2h = together.map(g => { const ra = a.rondas.find(r=>`${r.fecha}|${r.hora}|${r.cancha}`===g.key), rb = b.rondas.find(r=>`${r.fecha}|${r.hora}|${r.cancha}`===g.key); return {g, ra, rb}; }).filter(x=>x.ra&&x.rb);
+  const winsA = h2h.filter(x=>x.ra.dif<x.rb.dif).length, winsB = h2h.filter(x=>x.rb.dif<x.ra.dif).length;
+  const grossA = h2h.filter(x=>x.ra.gross&&x.rb.gross&&x.ra.gross<x.rb.gross).length, grossB = h2h.filter(x=>x.ra.gross&&x.rb.gross&&x.rb.gross<x.ra.gross).length;
+  let wa=0, wb=0;
+  const body = rows.map(([lab,f,fmt,dir]) => { const va=f(a), vb=f(b); let win=''; if (va!==null&&vb!==null&&va!==vb) win = (dir==='low'?va<vb:va>vb)?'win-a':'win-b'; if (win==='win-a') wa++; if (win==='win-b') wb++; const mx = Math.max(Math.abs(va||0),Math.abs(vb||0))||1; return `<div class="vs-row ${win}"><div class="a"><span class="val">${fmt(va)}</span><span class="bar"><i style="width:${Math.abs(va||0)/mx*100}%"></i></span></div><div class="m">${lab}</div><div class="b"><span class="val">${fmt(vb)}</span><span class="bar"><i style="width:${Math.abs(vb||0)/mx*100}%"></i></span></div></div>`; }).join('');
+  const cmp = [{ name:a.corto, color:'var(--s1)', points:a.st.hist.filter(e=>daysBetween(e.fecha,TODAY)<=365).map(e=>({x:e.fecha,y:e.indice,label:`${a.corto} · ${fmtLong(e.fecha)}: ${d2(e.indice)}`})) },{ name:b.corto, color:'var(--s2)', points:b.st.hist.filter(e=>daysBetween(e.fecha,TODAY)<=365).map(e=>({x:e.fecha,y:e.indice,label:`${b.corto} · ${fmtLong(e.fecha)}: ${d2(e.indice)}`})) }];
+  return `
+  <section class="panel">
+    <div class="panel-h"><h2>Cara a cara</h2><p>Elige dos tortugas. El color marca quién gana cada métrica; abajo, el historial real de las veces que salieron juntos.</p></div>
+    <div class="vs-pick"><select id="vsA" aria-label="Jugador A">${opts(a)}</select><span class="vs-x">vs</span><select id="vsB" aria-label="Jugador B">${opts(b)}</select></div>
+    <div class="tiles" style="margin-top:14px;grid-template-columns:1fr 1fr">
+      <div class="tile" style="border-left:4px solid var(--s1)"><div class="v">${wa}</div><div class="l">métricas a favor de ${esc(a.corto)}</div></div>
+      <div class="tile" style="border-right:4px solid var(--s2);text-align:right"><div class="v">${wb}</div><div class="l">métricas a favor de ${esc(b.corto)}</div></div>
+    </div>
+    <div class="vs-rows" style="margin-top:10px">${body}</div>
+  </section>
+  <section class="grid g2">
+    <div class="panel">
+      <div class="panel-h"><h3>Índice en el último año</h3></div>
+      <div class="chart">${lineChart(cmp,{h:220,aria:'Comparación de índices'})}</div>
+      <div class="legend"><span><i style="background:var(--s1)"></i>${esc(a.corto)}</span><span><i style="background:var(--s2)"></i>${esc(b.corto)}</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Cuando han salido juntos</h3><p>${h2h.length?`${h2h.length} salida${h2h.length===1?'':'s'} compartida${h2h.length===1?'':'s'} · por diferencial: ${esc(a.corto.split(' ')[0])} ${winsA} – ${winsB} ${esc(b.corto.split(' ')[0])}${grossA+grossB?` · por gross: ${grossA} – ${grossB}`:''}`:'No hay salidas compartidas en sus últimas 20 rondas.'}</p></div>
+      ${h2h.length?`<div class="tbl-wrap"><table><thead><tr><th>Fecha</th><th>Cancha</th><th class="r">${esc(a.corto.split(' ')[0])}</th><th class="r">${esc(b.corto.split(' ')[0])}</th><th>Ganó</th></tr></thead><tbody>${h2h.map(x=>`<tr><td class="num">${fmtDate(x.g.fecha)}</td><td>${esc(x.g.cancha)}</td><td class="r num">${x.ra.gross??'—'} <span class="muted">(${fmtSigned(x.ra.dif)})</span></td><td class="r num">${x.rb.gross??'—'} <span class="muted">(${fmtSigned(x.rb.dif)})</span></td><td>${x.ra.dif<x.rb.dif?`<span style="color:var(--s1);font-weight:600">${esc(a.corto.split(' ')[0])}</span>`:x.rb.dif<x.ra.dif?`<span style="color:var(--s2);font-weight:600">${esc(b.corto.split(' ')[0])}</span>`:'empate'}</td></tr>`).join('')}</tbody></table></div><p class="note" style="margin-top:8px">"Ganó" compara el diferencial (ajustado por dificultad de marcas), no el gross.</p>`:''}
+    </div>
+  </section>`;
+};
+
+views.acerca = () => `
+  <section class="panel">
+    <div class="panel-h"><h2>Cómo se calcula todo esto</h2></div>
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:70ch">
+      <p><b>De dónde salen los datos.</b> Todo viene de la consulta pública de hándicap de la Federación Colombiana de Golf: el índice vigente de cada jugador, su historial de liquidaciones (al corte y al día), las últimas 20 rondas reportadas y la tarjeta hoyo a hoyo de cada una. No hay nada estimado ni digitado a mano.</p>
+      <p><b>Índice WHS.</b> El índice es el promedio de los 8 mejores diferenciales entre las últimas 20 rondas (con ajustes cuando hay menos de 20). En las fichas, las rondas marcadas con ★ son las que Fedegolf tiene contando para el índice en este momento.</p>
+      <p><b>Diferencial.</b> (113 ÷ slope) × (gross ajustado − course rating). Por eso un 89 en Llano Grande desde las negras (CR 74.7, slope 142) puede valer lo mismo que un 86 desde las azules. "Mejor ronda" y los cara a cara comparan diferenciales, que es la forma justa de comparar rondas en canchas o marcas distintas.</p>
+      <p><b>Mejora y retroceso.</b> Se compara el índice vigente con el índice que Fedegolf tenía liquidado hace 30 días, 3 meses y 12 meses. Negativo es mejora.</p>
+      <p><b>Consistencia (σ).</b> Desviación estándar de los 20 diferenciales. Un σ de 3 significa que casi todas las rondas caen a ±3 del promedio; un σ de 6 es una montaña rusa. Solo se rankea a jugadores con 3 o más rondas en el último año.</p>
+      <p><b>Estadísticas por hoyo.</b> Solo se usan tarjetas de 18 hoyos cuya suma coincide con el gross reportado. Rondas de 9 hoyos y tarjetas incompletas se excluyen de birdies, pares, dobles y promedios por par.</p>
+      <p><b>Salidas compartidas.</b> Dos tortugas "salieron juntas" cuando sus tarjetas tienen la misma fecha, la misma hora de salida y la misma cancha. Es una aproximación: puede faltar alguna salida real y nunca inventa una.</p>
+      <p><b>Tope (cap) del WHS.</b> El índice no puede subir libremente: a partir de 3.0 por encima de tu índice mínimo de los últimos 12 meses sube a la mitad (soft cap) y nunca más de 5.0 (hard cap). Cuando Fedegolf aplica un tope, la ficha lo marca y muestra el promedio real de tus 8 mejores junto al índice publicado.</p>
+      <p><b>Ranking Nacional.</b> Posiciones, puntos y movimiento tal como los publica Fedegolf en el Ranking Nacional de Aficionados por categoría. Solo aparecen jugadores con puntos en torneos federados.</p>
+      <p><b>Récords y rachas.</b> Mejor ida, mejor vuelta, birdies en una ronda, rachas sin doble bogey y en par o mejor se calculan sobre las tarjetas de 18 hoyos, en orden cronológico; una racha puede cruzar de una ronda a la siguiente.</p>
+      <p><b>Límite de 20 rondas y archivo del tablero.</b> Fedegolf solo expone las últimas 20 rondas por jugador. Por eso el tablero guarda un archivo propio: en cada actualización se agregan las rondas nuevas sin borrar las que ya salieron de Fedegolf. Los cálculos del índice (los 8 que cuentan, diferencial a batir, ronda que se cae) usan solo las 20 vigentes; récords, actividad, promedios por hoyo y compañeros usan todo el archivo, que crece con el tiempo.</p>
+      <p><b>Actualización.</b> Datos tomados el ${fmtLong(TODAY)}. Para refrescar el tablero se vuelve a consultar Fedegolf para los 23 códigos y se republica en este mismo enlace.</p>
+    </div>
+  </section>`;
+
+/* ---------- router ---------- */
+let state = { view:'resumen', code:null, a:null, b:null };
+function render(keep) {
+  const sy = window.scrollY;
+  const v = state.view;
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.view === v ? 'true' : 'false'));
+  let html = '';
+  if (v === 'jugadores') html = views.jugadores(state.code);
+  else if (v === 'versus') html = views.versus(state.a, state.b);
+  else html = views[v] ? views[v]() : views.resumen();
+  main.innerHTML = `<div class="view">${html}</div>`;
+  bindTips(main);
+  main.querySelectorAll('[data-code]').forEach(el => {
+    const go = e => { e.stopPropagation(); openPlayer(el.dataset.code); };
+    el.addEventListener('click', go);
+    if (el.getAttribute('role') === 'button') el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(e); } });
+  });
+  main.querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => nav(el.dataset.nav)));
+  main.querySelectorAll('tr.rr').forEach(tr => tr.addEventListener('click', () => { const nx = tr.nextElementSibling; const open = !nx.hidden; main.querySelectorAll('tr.sc-row').forEach(x=>x.hidden=true); main.querySelectorAll('tr.rr').forEach(x=>x.classList.remove('open')); if (!open) { nx.hidden = false; tr.classList.add('open'); } }));
+  const saveTees = () => { try { localStorage.setItem('tortugas.tees', JSON.stringify(teeChoice)); } catch (e) {} };
+  main.querySelectorAll('select.teeSel').forEach(sel => {
+    sel.addEventListener('click', e => e.stopPropagation());
+    sel.addEventListener('keydown', e => e.stopPropagation());
+    sel.addEventListener('change', e => { e.stopPropagation(); const p = byCode[sel.dataset.tee]; if (sel.value === teeDefault(p)) delete teeChoice[p.codigo]; else teeChoice[p.codigo] = sel.value; saveTees(); render(true); });
+  });
+  const periodSel = document.getElementById('periodSel');
+  if (periodSel) periodSel.addEventListener('change', () => { period = periodSel.value; try { localStorage.setItem('tortugas.period', period); } catch (e) {} render(true); });
+  const teeAll = document.getElementById('teeAll');
+  if (teeAll) {
+    teeAll.addEventListener('change', () => { if (!teeAll.value) { teeChoice = {}; } else { teeChoice = {}; P.forEach(p => { if (teeAll.value !== teeDefault(p)) teeChoice[p.codigo] = teeAll.value; }); } saveTees(); render(true); });
+    document.getElementById('teeReset').addEventListener('click', () => { teeChoice = {}; saveTees(); render(true); });
+  }
+  const A = document.getElementById('vsA'), B = document.getElementById('vsB');
+  if (A) { A.addEventListener('change', () => { state.a = A.value; render(); }); B.addEventListener('change', () => { state.b = B.value; render(); }); }
+  window.scrollTo({ top: keep ? sy : 0 });
+  try { localStorage.setItem('tortugas.view', JSON.stringify(state)); } catch (e) {}
+}
+function nav(view) { state.view = view; state.code = null; render(); }
+function openPlayer(code) { state.view = 'jugadores'; state.code = String(code); render(); }
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => nav(b.dataset.view)));
+
+/* search */
+const q = document.getElementById('q'), sug = document.getElementById('sug');
+function norm(s){ return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
+q.addEventListener('input', () => {
+  const t = norm(q.value.trim()); if (!t) { sug.hidden = true; return; }
+  const hits = P.filter(p => norm(p.nombre).includes(t) || String(p.codigo).startsWith(t)).slice(0,6);
+  sug.innerHTML = hits.map(p=>`<button data-c="${p.codigo}">${esc(p.corto)} <span class="muted num">${d2(p.indice)}</span></button>`).join('') || '<button disabled class="muted">Sin resultados</button>';
+  sug.hidden = false;
+  sug.querySelectorAll('button[data-c]').forEach(b => b.addEventListener('click', () => { openPlayer(b.dataset.c); q.value=''; sug.hidden = true; }));
+});
+q.addEventListener('keydown', e => { if (e.key === 'Enter') { const b = sug.querySelector('button[data-c]'); if (b) b.click(); } if (e.key === 'Escape') sug.hidden = true; });
+document.addEventListener('click', e => { if (!e.target.closest('.search')) sug.hidden = true; });
+
+document.getElementById('upd').textContent = fmtLong(TODAY);
+/* initial view: hash token, else remembered, else resumen */
+(() => {
+  const h = location.hash.replace('#','');
+  if (h.startsWith('j-') && byCode[h.slice(2)]) { state.view='jugadores'; state.code=h.slice(2); }
+  else if (views[h]) state.view = h;
+  else { try { const s = JSON.parse(localStorage.getItem('tortugas.view')); if (s && views[s.view]) state = {...state, ...s}; } catch(e){} }
+  render();
+})();
+})();
+</script>
